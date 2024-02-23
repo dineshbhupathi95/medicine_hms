@@ -4,7 +4,9 @@ from .models import *
 from .serializers.patient_serializer import *
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, ValidationError
-import datetime
+from django.db.models import Count
+from datetime import datetime
+from django.db.models import F
 
 
 class PatientCreateAPIView(generics.ListCreateAPIView):
@@ -58,6 +60,11 @@ class AppointmentUpdateView(generics.UpdateAPIView):
     def perform_update(self, serializer):
         serializer.save()
 
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = AppointmentRetrivalSerializer(instance)
+        return Response(serializer.data)
+
 
 class DoctorPatientsAPIView(generics.ListAPIView):
     serializer_class = AppointmentRetrivalSerializer
@@ -69,6 +76,9 @@ class DoctorPatientsAPIView(generics.ListAPIView):
         appointment_date = self.request.query_params.get('appointment_date')
         if appointment_date:
             queryset = queryset.filter(appointment_date=appointment_date)
+
+        # Sort queryset by appointment_time in ascending order
+        queryset = queryset.order_by(F('appointment_time').asc())
 
         return queryset
 
@@ -102,3 +112,43 @@ class PatientDetailsAPIView(generics.RetrieveAPIView):
             raise NotFound("Patient not found")
 
         return patient
+
+
+class RecentAppointments(generics.ListAPIView):
+    queryset = Appointment.objects.all().order_by('-id')[:5]
+    serializer_class = AppointmentRetrivalSerializer
+
+
+
+class AppointmentDashboard(generics.ListAPIView):
+    def get_queryset(self):
+        queryset = Appointment.objects.all()
+        # Get the date from query parameters
+        date_str = self.request.query_params.get('date')
+        if date_str:
+            try:
+                date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                queryset = queryset.filter(appointment_date=date)
+            except ValueError:
+                pass  # Handle invalid date format gracefully
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        # Count appointments for each doctor
+        doctor_counts = queryset.values('doctor__username').annotate(appointment_count=Count('id'))
+        print(doctor_counts)
+        doctor_wise_counts = [{'label': item['doctor__username'], 'value': item['appointment_count']} for item in
+                              doctor_counts]
+
+        # Count appointments for each department
+        department_counts = queryset.values('doctor__department__name').annotate(appointment_count=Count('id'))
+        department_wise_counts = [
+            {'label': item['doctor__department__name'], 'value': item['appointment_count']} for item in
+            department_counts]
+        all_counts = doctor_wise_counts + department_wise_counts
+
+        total_count = queryset.count()
+
+        return Response({'total_count': total_count, 'dashboard_counts': all_counts})

@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 
 class UserManager(BaseUserManager):
@@ -68,6 +71,47 @@ class User(AbstractUser):
     phone_number = models.CharField(blank=True, max_length=31)
     role = models.CharField(max_length=20, choices=USER_ROLE_CHOICES, default='regular')
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
+    start_time = models.TimeField(null=True,blank=True)
+    end_time = models.TimeField(null=True,blank=True)
+
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
     objects = UserManager()
+
+
+class AppointmentSlot(models.Model):
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.doctor.name} - {self.start_time.strftime('%Y-%m-%d %H:%M')} to {self.end_time.strftime('%Y-%m-%d %H:%M')}"
+
+    @classmethod
+    def create_slots(cls, doctor, start_date):
+        # Get the start and end times for the doctor
+        start_time = timezone.datetime.combine(start_date, doctor.start_time)
+        end_time = timezone.datetime.combine(start_date, doctor.end_time)
+
+        # Ensure end time is greater than start time
+        if end_time <= start_time:
+            return
+
+        # Create slots within the specified time range
+        while start_time < end_time:
+            cls.objects.create(doctor=doctor, start_time=start_time,
+                               end_time=start_time + timezone.timedelta(minutes=15))
+            start_time += timezone.timedelta(minutes=15)
+
+@receiver(post_save, sender=User)
+def create_slots(sender, instance, created, **kwargs):
+    if created and instance.role == 'doctor':
+        start_time = timezone.now().replace(hour=instance.start_time.hour, minute=instance.start_time.minute, second=0,
+                                            microsecond=0)
+        end_time = timezone.now().replace(hour=instance.end_time.hour, minute=instance.end_time.minute, second=0,
+                                          microsecond=0)
+
+        while start_time < end_time:
+            AppointmentSlot.objects.create(doctor=instance, start_time=start_time,
+                                           end_time=start_time + timezone.timedelta(minutes=15))
+            start_time += timezone.timedelta(minutes=15)

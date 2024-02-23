@@ -5,6 +5,8 @@ import apiConfig from '../apiConfig';
 import axios from 'axios';
 import CreatePatientForm from './patientForm/PatientForm';
 import AppointmentScheduleDialog from './patientForm/AppointmentDialog';
+import TopBar from './Topbar';
+import Sidebar from './Sidebar';
 
 const PatientList = ({ patientList }) => {
   const [page, setPage] = useState(1);
@@ -119,12 +121,6 @@ const PatientTable = () => {
   const handleAppointmentClick = () =>{
     setAppointmentOpen(true)
   }
-  // const patientList = [
-  //   { id: 1, patientId: 'P001', name: 'John Doe', age: 35, gender: 'Male', details: 'Lorem ipsum dolor sit amet' },
-  //   { id: 2, patientId: 'P002', name: 'Jane Smith', age: 28, gender: 'Female', details: 'Consectetur adipiscing elit' },
-  //   { id: 3, patientId: 'P003', name: 'Michael Johnson', age: 45, gender: 'Male', details: 'Sed do eiusmod tempor incididunt' },
-  //   // Add more mock patient data as needed
-  // ];
 
   return (
     <div>
@@ -141,17 +137,6 @@ const PatientTable = () => {
       <AppointmentScheduleDialog open={appointmentOpen} handleClose={handleClose} /> 
       <CreatePatientForm open={open} handleClose={handleClose} /> 
     </div>
-    // <div>
-    //   <Grid container spacing={2}>
-    //   <Grid item xs={12} align='right'>
-    //       <CreatePatientButton />
-    //     </Grid>
-    //     <Grid item xs={12}>
-    //       <PatientList patientList={patientList} />
-    //     </Grid>
-        
-    //   </Grid>
-    // </div>
   );
 };
 

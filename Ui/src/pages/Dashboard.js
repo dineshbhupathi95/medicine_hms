@@ -8,6 +8,7 @@ import Paper from '@mui/material/Paper';
 import PatientCount from '../components/PatientCount';
 import RecentAppointments from '../components/RecentAppointmentComp';
 import VisitPieChart from '../components/PatientChart';
+import { TextField } from '@mui/material';
 
 function Dashboard() {
   return (
@@ -25,6 +26,7 @@ function Dashboard() {
           }}
         >
           <Toolbar />
+          
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
               {/* Chart */}

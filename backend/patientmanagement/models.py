@@ -1,5 +1,6 @@
 from django.db import models
 from usermanagement.models import User
+from django.utils import timezone
 
 
 # Create your models here.
@@ -29,3 +30,4 @@ class Appointment(models.Model):
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
     prescription = models.TextField(null=True, blank=True)
+

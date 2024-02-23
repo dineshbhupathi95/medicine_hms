@@ -38,6 +38,14 @@ class PatientAppointmentsSerializer(serializers.ModelSerializer):
         fields = serializers.ALL_FIELDS
 
 
+class AppointmentDoctorRetrivalSerializer(serializers.ModelSerializer):
+    doctor = UserRetrieveSerializer()
+
+    class Meta:
+        model = Appointment
+        fields = serializers.ALL_FIELDS
+
+
 class PatientDetailsSerializer(serializers.ModelSerializer):
     appointments = serializers.SerializerMethodField()
 
@@ -47,4 +55,4 @@ class PatientDetailsSerializer(serializers.ModelSerializer):
 
     def get_appointments(self, obj):
         appointments = Appointment.objects.filter(patient_id=obj.id)
-        return AppointmentSerializer(appointments, many=True).data
+        return AppointmentRetrivalSerializer(appointments, many=True).data

@@ -49,8 +49,9 @@ function LoginPage() {
     // Check if the user is already logged in
     const user = localStorage.getItem('user');
     if (user) {
-      navigate("/")
       setLoggedIn(true);
+      navigate("/")
+      
     }else{
       navigate("/login")
     }
@@ -67,10 +68,23 @@ function LoginPage() {
           username: data.get('email'),
           password: data.get('password')
       });
-      console.log(response.data);
-      navigate("/")
-      localStorage.setItem('user',JSON.stringify({loggedin:true,id:response.data.id,username:response.data.username,role:response.data.role}))
-      // Handle successful login, e.g., redirect to dashboard
+      localStorage.setItem('user', JSON.stringify({
+        loggedIn: true,
+        id: response.data.id,
+        username: response.data.username,
+        role: response.data.role
+      }));
+  
+      // Redirect to /doctor after successful login
+      // console.log("Redirecting to /doctor");
+      if (response.data.role == 'admin'){
+        // navigate('/')
+window.location.href = '/'
+      }
+      if (response.data.role == 'doctor'){
+      // navigate('/doctor');
+      window.location.href = '/doctor'
+    }
   } catch (error) {
     setOpen(true)
       console.error('Login error:', error);

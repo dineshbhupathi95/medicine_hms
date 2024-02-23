@@ -14,15 +14,32 @@ import './App.css';
 import CampaignComponent from './components/admin_components/Campain';
 import DoctorDashboard from './components/doctor_components/DoctorDashboard';
 import PatientDetailsComponent from './components/doctor_components/PatientDetialsModel';
-
+import PageNotFound from './pages/PageNotFound';
+import TestApp from './components/TestVoice';
 function App() {
-  
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userObj,setUserObj] = useState()
+  useEffect(() => {
+    // Check if the user is already logged in
+    const user = localStorage.getItem('user');
+    if (user) {
+      setLoggedIn(true);
+      setUserObj(user)
+      
+    }
+  }, []);
+  console.log(userObj)
+
   return (
     <Router>
       <div>
-        <TopBar className="top-bar" />
+      {loggedIn &&
+      <TopBar className="top-bar" />
+}
         <div className="main-container">
-          <Sidebar className="sidebar" />
+        {loggedIn &&
+         <Sidebar className="sidebar" />
+         }
           {/* {loggedIn ? <Navigate to="/" /> : <Navigate to="/login" />} */}
           <div className="content">
             <Routes>
@@ -37,6 +54,11 @@ function App() {
               <Route path='/reports' element={<Report />} />
               <Route path='/doctor' element={<DoctorDashboard />} />
               <Route path='/patient-history/:id' element={<PatientDetailsComponent />} /> 
+              <Route path='/page-not-found' element={<PageNotFound />} /> 
+
+              <Route path='/test' element={<TestApp />} />
+              <Route path='*' element={<Navigate to="/login" />} /> Redirect to login page if no matching route
+
             </Routes>
           </div>
         </div>

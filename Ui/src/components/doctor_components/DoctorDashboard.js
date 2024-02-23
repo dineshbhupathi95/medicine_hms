@@ -31,7 +31,7 @@ const PatientList = ({ patientList }) => {
   const startIndex = (page - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const paginatedPatients = filteredPatients.slice(startIndex, endIndex);
-
+console.log(paginatedPatients,'pagepatients')
   return (
     <div>
       <TextField
@@ -49,20 +49,26 @@ const PatientList = ({ patientList }) => {
               <TableCell>Mobile Number</TableCell>
               <TableCell>Age</TableCell>
               <TableCell>Gender</TableCell>
-              <TableCell>Actions</TableCell> {/* Add Actions column */}
+              <TableCell>Appointment Time</TableCell>
+              {/* <TableCell>Actions</TableCell>  */}
             </TableRow>
           </TableHead>
           <TableBody>
             {paginatedPatients.map((patient) => (
               <TableRow key={patient.id}>
-                <TableCell>{patient.patient.patient_id}</TableCell>
+                <TableCell>
+                <Link to={`/patient-history/${patient.patient.id}`}>{patient.patient.patient_id}</Link>
+                    
+                    </TableCell>
                 <TableCell>{patient.patient.patient_name}</TableCell>
                 <TableCell>{patient.patient.mobile_number}</TableCell>
                 <TableCell>{patient.patient.age ? patient.patient.age : 'N/A'}</TableCell>
                 <TableCell>{patient.patient.gender ? patient.patient.gender : 'N/A'}</TableCell>
-                <TableCell>
-                  <Link to={`/patient-history/${patient.patient.id}`}>View Details</Link> {/* Redirect to PatientDetailsPage */}
-                </TableCell>
+                <TableCell>{patient.appointment_time ? patient.appointment_time : 'N/A'}</TableCell>
+
+                {/* <TableCell>
+                  <Link to={`/patient-history/${patient.patient.id}`}>View Details</Link>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>
@@ -89,6 +95,7 @@ const getFormattedDate = () => {
     return `${year}-${month}-${day}`;
   };
 const DoctorDashboard = () => {
+    // alert('jj')
   const [assignedPatients, setAssignedPatients] = useState([]);
   const [filterDate, setFilterDate] = useState(getFormattedDate()); // Initialize filterDate with current date
 
@@ -107,7 +114,7 @@ const DoctorDashboard = () => {
       let url = `${apiConfig.baseURL}/patient/api/doctor/${doctorId}/patients/?appointment_date=${currentDate}`;
     //   console.log(url);
       const response = await axios.get(url, {});
-      console.log(response.data);
+      
       setAssignedPatients(response.data);
     } catch (error) {
       console.error('error:', error);

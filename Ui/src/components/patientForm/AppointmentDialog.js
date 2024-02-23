@@ -6,10 +6,13 @@ import apiConfig from '../../apiConfig';
 const AppointmentScheduleDialog = ({ open, handleClose }) => {
     const [formData, setFormData] = useState({
         appointment_date: '',
-        appointment_time: '',
         patient: '',
-        doctor: ''
+        doctor: '',
+        appointment_time: ''
     });
+
+    const [appointmentSlots, setAppointmentSlots] = useState([]);
+    const [selectedSlot, setSelectedSlot] = useState(null);
 
     const [patients, setPatients] = useState([]);
     const [filteredPatients, setFilteredPatients] = useState([]);
@@ -42,6 +45,16 @@ const AppointmentScheduleDialog = ({ open, handleClose }) => {
         fetchDoctors();
     }, []);
 
+    // Function to fetch appointment slots for the selected doctor
+    const fetchDoctorSlots = async (doctorId, date) => {
+        try {
+            const response = await axios.get(`${apiConfig.baseURL}/user/api/doctor-slots/${doctorId}/?date=${date}`);
+            setAppointmentSlots(response.data);
+        } catch (error) {
+            console.error('Error fetching doctor slots:', error);
+        }
+    };
+
     const handlePatientSearch = (event) => {
         const searchQuery = event.target.value.toLowerCase();
         const filtered = patients.filter((patient) =>
@@ -61,20 +74,41 @@ const AppointmentScheduleDialog = ({ open, handleClose }) => {
 
     const handleChange = (event) => {
         setFormData({ ...formData, [event.target.name]: event.target.value });
+        // Fetch appointment slots when doctor selection is made
+        if (event.target.name === 'doctor') {
+            fetchDoctorSlots(event.target.value, formData.appointment_date);
+        }
+    };
+
+    const handleSlotSelect = (slot) => {
+        setSelectedSlot(slot);
+        setFormData({ ...formData, appointment_time: `${slot.start_time}` });
     };
 
     const handleSubmit = async () => {
-        console.log(formData)
-        try{
+        console.log(formData);
+        try {
             const response = await axios.post(`${apiConfig.baseURL}/patient/api/appointment/`, formData);
-            console.log(response)
-          }
-          catch(error){
-            console.log(error)
-          }
-        
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+
         handleClose();
     };
+
+    useEffect(() => {
+        if (open) {
+            setFormData({
+                appointment_date: '',
+                patient: '',
+                doctor: '',
+                appointment_time: ''
+            });
+            setAppointmentSlots([]);
+            setSelectedSlot(null);
+        }
+    }, [open]);
 
     return (
         <Dialog open={open} onClose={handleClose}>
@@ -87,17 +121,6 @@ const AppointmentScheduleDialog = ({ open, handleClose }) => {
                             type="date"
                             name="appointment_date"
                             value={formData.appointment_date}
-                            onChange={handleChange}
-                            fullWidth
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Appointment Time"
-                            type="time"
-                            name="appointment_time"
-                            value={formData.appointment_time}
                             onChange={handleChange}
                             fullWidth
                             InputLabelProps={{ shrink: true }}
@@ -119,7 +142,7 @@ const AppointmentScheduleDialog = ({ open, handleClose }) => {
                             ))}
                         </TextField>
                     </Grid>
-                    <Grid item xs={12}>                        
+                    <Grid item xs={12}>
                         <TextField
                             select
                             label="Doctor"
@@ -135,6 +158,24 @@ const AppointmentScheduleDialog = ({ open, handleClose }) => {
                             ))}
                         </TextField>
                     </Grid>
+                    <Grid item xs={12}>
+                        {/* Render appointment slots as buttons */}
+                        {appointmentSlots.map((slot, index) => (
+                            <Button
+                                key={index}
+                                variant="contained"
+                                onClick={() => handleSlotSelect(slot)}
+                                style={{
+                                    backgroundColor: selectedSlot && slot.start_time === selectedSlot.start_time ? '#7a05f0' : '#1976d2',
+                                    color: '#ffffff',
+                                    marginRight: '10px',
+                                    marginBottom: '10px'
+                                }}
+                            >
+                                {slot.start_time} - {slot.end_time}
+                            </Button>
+                        ))}
+                    </Grid>
                 </Grid>
             </DialogContent>
             <Grid container justifyContent="flex-end" spacing={2} style={{ padding: '16px' }}>
@@ -142,7 +183,7 @@ const AppointmentScheduleDialog = ({ open, handleClose }) => {
                     <Button onClick={handleClose} color="secondary">Cancel</Button>
                 </Grid>
                 <Grid item>
-                    <Button onClick={handleSubmit} variant="contained" color="primary">Schedule</Button>
+                    <Button onClick={handleSubmit} variant="contained" style={{ backgroundColor: '#1976d2', color: '#fff' }}>Schedule</Button>
                 </Grid>
             </Grid>
         </Dialog>

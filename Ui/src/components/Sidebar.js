@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -52,11 +52,21 @@ const SubmenuItem = styled(ListItem)(({ theme }) => ({
   paddingLeft: theme.spacing(4), // Adjust indent for submenus
 }));
 
-function Sidebar() {
+function  Sidebar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const [userObj, setUserObj] = useState({});
 
+  useEffect(() => {
+    // Check if the user is already logged in
+    const user = JSON.parse(localStorage.getItem('user'));
+    // console.log(user)
+    if (user) {
+      setUserObj(user);
+    }
+  }, []);
+  console.log(userObj)
   const handleMouseEnter = () => {
     setIsOpen(true);
   };
@@ -93,15 +103,18 @@ function Sidebar() {
       <Toolbar>
         <DrawerHeader />
       </Toolbar>
+      {userObj.role == 'admin' && (
       <List sx={{ flexGrow: 1, marginTop: 0 }}>
         <NavLink to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <BlueHighlightListItem button selected={location.pathname === '/'}>
-            <IconWithText>
-              <DashboardIcon />
-              <Text>Dashboard</Text>
-            </IconWithText>
-          </BlueHighlightListItem>
-        </NavLink>
+        <BlueHighlightListItem button selected={location.pathname === '/'}>
+          <IconWithText>
+            <DashboardIcon />
+            <Text>Dashboard</Text>
+          </IconWithText>
+        </BlueHighlightListItem>
+      </NavLink>
+      
+        
         <BlueHighlightListItem
           button
           onClick={handleAdminMenuClick}
@@ -161,7 +174,22 @@ function Sidebar() {
             </IconWithText>
           </BlueHighlightListItem>
         </NavLink>
+        
       </List>
+      )} 
+      {/* Doctor Routes */}
+      {userObj.role == 'doctor' && (
+        <List sx={{ flexGrow: 1, marginTop: 0 }}>
+        <NavLink to="/doctor" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <BlueHighlightListItem button selected={location.pathname === '/doctor'}>
+          <IconWithText>
+            <DashboardIcon />
+            <Text>Doctor Dashboard</Text>
+          </IconWithText>
+        </BlueHighlightListItem>
+      </NavLink>
+      </List>
+      )}
     </Drawer>
   );
 }

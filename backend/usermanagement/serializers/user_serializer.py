@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'first_name', 'last_name', 'username', 'email', 'role', 'password', 'phone_number',
-                  'department']
+                  'department', 'start_time', 'end_time']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -42,3 +42,19 @@ class UserRetrieveSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'first_name', 'last_name', 'username', 'email', 'role', 'phone_number',
                   'department']
+
+class TimeField(serializers.Field):
+    """
+    A custom read-only field to represent time without losing timezone information.
+    """
+    def to_representation(self, value):
+        # Convert datetime to time while preserving timezone information
+        return value.time()
+
+class AppointmentSlotSerializer(serializers.ModelSerializer):
+    start_time = TimeField()
+    end_time = TimeField()
+
+    class Meta:
+        model = AppointmentSlot
+        fields = ['start_time', 'end_time']

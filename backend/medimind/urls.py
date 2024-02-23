@@ -24,6 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('docs/', schema_view),
     path('user/', include('usermanagement.urls')),  # Include your app's URLs
-path('patient/', include('patientmanagement.urls')),
+    path('patient/', include('patientmanagement.urls')),
 
 ]

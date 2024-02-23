@@ -64,7 +64,7 @@ export default function RecentAppointments() {
 
   const getAppointments = async () =>{
     try{
-      const response = await axios.get(`${apiConfig.baseURL}/patient/api/appointment/`);
+      const response = await axios.get(`${apiConfig.baseURL}/patient/api/recent-appointment/`);
       console.log(response)
       setAppointmentRows(response.data)
     }

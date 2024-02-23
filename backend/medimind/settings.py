@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'rest_framework',
     'corsheaders',
     'rest_framework_swagger',
@@ -126,7 +127,20 @@ USE_I18N = True
 
 USE_TZ = True
 
+# twillio
 
+TWILIO_ACCOUNT_SID = 'AC136c50e99273410e3e8e185b13213da0'
+TWILIO_AUTH_TOKEN = '81d724472b5004cc53a6af68b3410c3e'
+TWILIO_PHONE_NUMBER = '+12342941971'
+TWILIO_WHATSAPP_NUMBER = '+14155238886'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587  # or the appropriate port for your SMTP server
+EMAIL_HOST_USER = 'bupathidinesh95@gmail.com'
+EMAIL_HOST_PASSWORD = 'dinesh@9959'
+EMAIL_USE_TLS = True  # or False if your SMTP server doesn't require TLS
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
@@ -136,3 +150,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+ASGI_APPLICATION = 'usermanagement.routing.application'

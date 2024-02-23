@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import apiConfig from '../apiConfig';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, 
-  Grid, MenuItem, Select, FormControl, InputLabel,TableContainer,Paper,Table,TableHead,TableRow,TableCell,TableBody } from '@mui/material';
+  Grid, MenuItem, Select, FormControl, InputLabel,TableContainer,Paper,Table,TableHead,TableRow,TableCell,TableBody,IconButton } from '@mui/material';
 import { Pagination } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 
 
@@ -82,62 +84,110 @@ const UserList = ({ userList }) => {
 
 const CreateUserForm = ({ open, handleClose }) => {
   const [formData, setFormData] = useState({
-    first_name:'',
-    last_name:'',
+    first_name: '',
+    last_name: '',
     username: '',
     email: '',
-    phone_number:'',
+    phone_number: '',
     password: '',
-    department:'',
-    role: ''
+    department: '',
+    role: '',
+    start_time: '00:00:00',
+    end_time: '00:00:00'
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Validation error messages
+  const [phoneError, setPhoneError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [formErrors, setFormErrors] = useState({});
 
   // Function to handle form submission
   const handleSubmit = async (event) => {
-    console.log(formData)
     event.preventDefault();
+
+    // Validate required fields
+    const requiredFields = ['username', 'email', 'phone_number', 'password'];
+    const errors = {};
+    requiredFields.forEach(field => {
+      if (!formData[field]) {
+        errors[field] = 'Required';
+      }
+    });
+
+    // Validate phone number
+    const phonePattern = /^\d{10}$/;
+    if (!phonePattern.test(formData.phone_number)) {
+      errors.phone_number = 'Invalid phone number (must be 10 digits)';
+    }
+
+    // Validate email address
+    const emailPattern = /^\S+@\S+\.\S+$/;
+    if (!emailPattern.test(formData.email)) {
+      errors.email = 'Invalid email address';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
     // Add logic to submit form data to the server
-    try{
+    try {
       const response = await axios.post(`${apiConfig.baseURL}/user/api/create/`, formData);
-      console.log(response)
+      console.log(response);
+    } catch (error) {
+      console.log(error);
     }
-    catch(error){
-      console.log(error)
-    }
+
     handleClose(); // Close the dialog after form submission
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    console.log(event.target)
-    setFormData({ ...formData, [name]: value });
+  
+    // Check if the field is the phone number
+    if (name === 'phone_number') {
+      // Remove any non-digit characters from the input value
+      const phoneNumber = value.replace(/\D/g, '');
+      // Check if the phone number length exceeds 10 digits
+      if (phoneNumber.length > 10) {
+        // Do not update state if phone number length exceeds 10 digits
+        return;
+      }
+      // Update the state with the cleaned phone number
+      setFormData({ ...formData, [name]: phoneNumber });
+    } else {
+      // For other fields, update the state as usual
+      setFormData({ ...formData, [name]: value });
+    }
   };
-
+  
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Create New User</DialogTitle>
       <DialogContent>
-        {/* Form fields for creating a new user */}
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-          <Grid item xs={6}>
-          <TextField
+            <Grid item xs={6}>
+              <TextField
                 label="First Name"
                 fullWidth
                 name="first_name"
                 value={formData.first_name}
                 onChange={handleChange}
               />
-          </Grid>
-          <Grid item xs={6}>
-          <TextField
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
                 label="Last Name"
                 fullWidth
                 name="last_name"
                 value={formData.last_name}
                 onChange={handleChange}
               />
-          </Grid>
+            </Grid>
             <Grid item xs={6}>
               <TextField
                 label="Username"
@@ -145,37 +195,59 @@ const CreateUserForm = ({ open, handleClose }) => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
+                error={!!formErrors.username}
+                helperText={formErrors.username}
+                required
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
                 label="Email"
                 fullWidth
+                type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                error={!!formErrors.email}
+                helperText={formErrors.email}
+                required
               />
             </Grid>
             <Grid item xs={6}>
-            <TextField
+              <TextField
                 label="Mobile Number"
                 fullWidth
                 name="phone_number"
                 value={formData.phone_number}
                 onChange={handleChange}
+                helperText={formErrors.phone_number}
+                error={!!formErrors.phone_number}
+                required
               />
             </Grid>
             <Grid item xs={6}>
-            <TextField
+              <TextField
                 label="Password"
                 fullWidth
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  )
+                }}
+                error={!!formErrors.password}
+                helperText={formErrors.password}
+                required
               />
             </Grid>
+            {/* Department and Role fields */}
             <Grid item xs={6}>
-            <TextField
+              <TextField
                 label="Department"
                 fullWidth
                 name="department"
@@ -199,17 +271,41 @@ const CreateUserForm = ({ open, handleClose }) => {
                 </Select>
               </FormControl>
             </Grid>
+            {formData.role === 'doctor' && (
+              <>
+                <Grid item xs={6}>
+                  <TextField
+                    label="Start Time"
+                    fullWidth
+                    type="time"
+                    name="start_time"
+                    value={formData.start_time}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    label="End Time"
+                    fullWidth
+                    type="time"
+                    name="end_time"
+                    value={formData.end_time}
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </>
+            )}
+
           </Grid>
           <DialogActions style={{ justifyContent: 'flex-end' }}>
             <Button onClick={handleClose} color="secondary">Cancel</Button>
-            <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>Create</Button>
+            <Button type="submit" variant="contained" color="primary">Create</Button>
           </DialogActions>
         </form>
       </DialogContent>
     </Dialog>
   );
 };
-
 // const CreateUserButton = () => {
 //   // Handle click event to open create user form or dialog
 //   return <Button variant="contained" color="primary">Create New User</Button>;
