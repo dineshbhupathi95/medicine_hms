@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,8 +25,12 @@ SECRET_KEY = 'django-insecure-^=eaf0a&r!t5_v46xvura@8@ekvfh1)cr^$*bqhm4vsc4-jlt1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
+ALLOWED_HOSTS = ['*']
+
+    # sudo nano /etc/nginx/sites-available/medimind
+    #sudo ln -s /etc/nginx/sites-available/medimind /etc/nginx/sites-enabled/
 
 # Application definition
 
@@ -42,24 +46,26 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_swagger',
     'usermanagement',
-    'patientmanagement'
+    'patientmanagement',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # <-- Place CorsMiddleware before other middleware
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  # Example: Allow requests from the React development server
+    'http://localhost:3000',
+    'http://localhost:8000'# Allow requests from the React development server
 ]
-
+# CSRF_TRUSTED_ORIGINS = ['http://localhost:3000','https://*.mydomain.com','http://*.127.0.0.1']
 
 AUTH_USER_MODEL = 'usermanagement.User'
 
@@ -70,7 +76,9 @@ ROOT_URLCONF = 'medimind.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),  # Path to the 'templates' folder at the project root
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -145,6 +153,11 @@ EMAIL_USE_TLS = True  # or False if your SMTP server doesn't require TLS
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR,'static')
+]
+# STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

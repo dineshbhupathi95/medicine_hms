@@ -11,6 +11,6 @@ urlpatterns = [
     path('api/patient-count/', PatientCountAPIView.as_view()),
     path('api/patient-details/<int:patient_id>', PatientDetailsAPIView.as_view()),
     path('api/doctor/<int:doctor_id>/patients/', DoctorPatientsAPIView.as_view(), name='doctor_patients'),
-
+    path('generate-pdf/', generate_pdf, name='generate_pdf'),
 
 ]

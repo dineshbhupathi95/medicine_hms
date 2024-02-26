@@ -7,7 +7,11 @@ from rest_framework.exceptions import NotFound, ValidationError
 from django.db.models import Count
 from datetime import datetime
 from django.db.models import F
-
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from io import BytesIO
+import json
 
 class PatientCreateAPIView(generics.ListCreateAPIView):
     queryset = Patients.objects.all()
@@ -152,3 +156,57 @@ class AppointmentDashboard(generics.ListAPIView):
         total_count = queryset.count()
 
         return Response({'total_count': total_count, 'dashboard_counts': all_counts})
+
+from django.template.loader import render_to_string
+
+def generate_pdf(request):
+    if request.method == 'POST':
+        try:
+            # Get dynamic data from the request
+            pdf_data = json.loads(request.body)
+
+            # Render HTML template with dynamic data
+            # template = get_template('pdf_generate.html')
+            html_content = render_to_string('pdf_generate.html', pdf_data)
+
+            # html_content = template.render(pdf_data)
+            html_content_with_style = f"""
+                         <html>
+                         <head>
+                             <style>
+                                 /* Add your CSS styles here */
+                                 body {{
+                                     font-family: Arial, sans-serif;
+                                     color: #333;
+                                 }}
+                                 /* Add more styles as needed */
+                                 .container {{
+            display: flex;
+            justify-content: space-between;
+        }}
+        .left {{
+            width: 45%; /* Adjust as needed */
+        }}
+        .right {{
+            width: 45%; /* Adjust as needed */
+        }}
+                             </style>
+                         </head>
+                         <body>
+                             {html_content}
+                         </body>
+                         </html>
+                     """
+            # Create PDF file
+            result = BytesIO()
+            pdf = pisa.pisaDocument(BytesIO(html_content_with_style.encode('utf-8')), result)
+            print(pdf)
+            # Return PDF as HttpResponse
+            if not pdf.err:
+                response = HttpResponse(result.getvalue(), content_type='application/pdf')
+                response['Content-Disposition'] = 'filename="output.pdf"'
+                return response
+            return HttpResponse('Error generating PDF')
+        except Exception as e:
+            return HttpResponse(f'Error generating PDF: {str(e)}', status=500)
+    return HttpResponse('Method not allowed', status=405)
