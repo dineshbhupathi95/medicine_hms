@@ -15,8 +15,8 @@ from django.core.mail import send_mail
 import asyncio
 import io
 from django.http import JsonResponse
-from google.cloud import speech_v1p1beta1
-from channels.generic.websocket import WebsocketConsumer
+# from google.cloud import speech_v1p1beta1
+# from channels.generic.websocket import WebsocketConsumer
 
 
 class UserCreateAPIView(generics.ListCreateAPIView):
@@ -139,58 +139,58 @@ class DoctorSlotsAPIView(generics.ListAPIView):
 
 
 # Speech-to-text streaming handler
-
-class SpeechToTextConsumer(WebsocketConsumer):
-    def connect(self):
-        self.accept()
-
-    def disconnect(self, close_code):
-        pass
-
-    async def receive(self, text_data):
-        # Initialize Google Cloud Speech client
-        client = speech_v1p1beta1.SpeechClient()
-
-        # Configuration for streaming speech recognition
-        config = {
-            'encoding': 'LINEAR16',
-            'sample_rate_hertz': 16000,
-            'language_code': 'en-US',
-        }
-
-        # Initialize streaming recognizer with interim results enabled
-        streaming_config = {
-            'config': config,
-            'interim_results': True,
-        }
-
-        # Process incoming audio chunks and stream the transcription back to the client
-        async def stream_transcription(requests):
-            responses = client.streaming_recognize(streaming_config, requests)
-
-            for response in responses:
-                for result in response.results:
-                    for alternative in result.alternatives:
-                        # Send interim transcription to the client
-                        await self.send(text_data=json.dumps({
-                            'transcript': alternative.transcript,
-                            'is_final': result.is_final,
-                        }))
-
-        # Process audio chunks received from the client
-        async def handle_audio_chunks(audio_chunks):
-            requests = (
-                speech_v1p1beta1.StreamingRecognizeRequest(audio_content=chunk)
-                for chunk in audio_chunks
-            )
-
-            # Stream transcription asynchronously
-            await stream_transcription(requests)
-
-        # Process audio data received from the client
-        async def process_audio_data(audio_data):
-            audio_chunks = io.BytesIO(audio_data).chunks()
-            await handle_audio_chunks(audio_chunks)
-
-        # Receive audio data from the client and start transcription
-        await process_audio_data(text_data.encode('latin-1'))
+#
+# class SpeechToTextConsumer(WebsocketConsumer):
+#     def connect(self):
+#         self.accept()
+#
+#     def disconnect(self, close_code):
+#         pass
+#
+#     async def receive(self, text_data):
+#         # Initialize Google Cloud Speech client
+#         client = speech_v1p1beta1.SpeechClient()
+#
+#         # Configuration for streaming speech recognition
+#         config = {
+#             'encoding': 'LINEAR16',
+#             'sample_rate_hertz': 16000,
+#             'language_code': 'en-US',
+#         }
+#
+#         # Initialize streaming recognizer with interim results enabled
+#         streaming_config = {
+#             'config': config,
+#             'interim_results': True,
+#         }
+#
+#         # Process incoming audio chunks and stream the transcription back to the client
+#         async def stream_transcription(requests):
+#             responses = client.streaming_recognize(streaming_config, requests)
+#
+#             for response in responses:
+#                 for result in response.results:
+#                     for alternative in result.alternatives:
+#                         # Send interim transcription to the client
+#                         await self.send(text_data=json.dumps({
+#                             'transcript': alternative.transcript,
+#                             'is_final': result.is_final,
+#                         }))
+#
+#         # Process audio chunks received from the client
+#         async def handle_audio_chunks(audio_chunks):
+#             requests = (
+#                 speech_v1p1beta1.StreamingRecognizeRequest(audio_content=chunk)
+#                 for chunk in audio_chunks
+#             )
+#
+#             # Stream transcription asynchronously
+#             await stream_transcription(requests)
+#
+#         # Process audio data received from the client
+#         async def process_audio_data(audio_data):
+#             audio_chunks = io.BytesIO(audio_data).chunks()
+#             await handle_audio_chunks(audio_chunks)
+#
+#         # Receive audio data from the client and start transcription
+#         await process_audio_data(text_data.encode('latin-1'))

@@ -41,7 +41,7 @@ urlpatterns = [
     # path('docs/', schema_view),
     path('api/user/', include('usermanagement.urls')),  # Include your app's URLs
     path('api/patient/', include('patientmanagement.urls')),
-    path('api/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    #path('api/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     # path('', TemplateView.as_view(template_name='build/index.html'), name='home')
 

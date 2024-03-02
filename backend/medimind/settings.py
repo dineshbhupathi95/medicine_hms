@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'channels',
     'rest_framework',
     'corsheaders',
-    'rest_framework_swagger',
+    #'rest_framework_swagger',
     'usermanagement',
     'patientmanagement',
     'drf_yasg',

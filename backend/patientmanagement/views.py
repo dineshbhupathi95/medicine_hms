@@ -9,8 +9,8 @@ from datetime import datetime
 from django.db.models import F
 from django.http import HttpResponse
 from django.template.loader import get_template
-from xhtml2pdf import pisa
-from io import BytesIO
+# from xhtml2pdf import pisa
+# from io import BytesIO
 import json
 from weasyprint import HTML
 from django.core.files.storage import default_storage
