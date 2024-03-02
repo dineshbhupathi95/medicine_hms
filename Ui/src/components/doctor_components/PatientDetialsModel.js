@@ -15,102 +15,143 @@ import SmsIcon from '@mui/icons-material/Sms';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import PetientPresciption from './PrescriptionDialog';
 
-const PrescriptionDialog = ({ selectedAppointmentData,prescription, open, onClose, onUpdate }) => {
-    const [changeValue, setChangeValue] = useState(prescription);
 
-    const handleChangePrescription = (e) => {
-        setChangeValue(e.target.value);
-    };
+const PrescriptionDialog = ({ selectedAppointmentData, prescription, open, onClose, onUpdate }) => {
+    // window.open(`http://localhost:8000/media/${selectedAppointmentData.patient.patient_name}_prescription${selectedAppointmentData.id}.pdf`)
+    // const [changeValue, setChangeValue] = useState(prescription);
 
-    const handleUpdate = () => {
-        onUpdate(changeValue); // Pass the updated prescription value
-        onClose(); // Close the dialog after updating
-    };
+    // const handleChangePrescription = (e) => {
+    //     setChangeValue(e.target.value);
+    // };
 
-    const handleSendEmail = () => {
-        // Implement send email function
-        console.log(selectedAppointmentData)
-        console.log('Sending email...');
-    };
+    // const handleUpdate = () => {
+    //     onUpdate(changeValue); // Pass the updated prescription value
+    //     onClose(); // Close the dialog after updating
+    // };
 
-    const handleSendSMS = async() => {
-        // Implement send SMS function
-        console.log('Sending SMS...');
-        let smsPayload = {
-            'to': '+91' + selectedAppointmentData.patient.mobile_number,
-            'body': changeValue || prescription
-        }
-        console.log(smsPayload)
-        try{
-            const response = await axios.post(`${apiConfig.baseURL}/user/api/send-sms/`,smsPayload)
-            console.log(response)
-            if (response.status==200){
-                alert('success')
-                onClose(); // Close the dialog after updating
+    // const handleSendEmail = () => {
+    //     // Implement send email function
+    //     console.log(selectedAppointmentData);
+    //     console.log('Sending email...');
+    // };
 
-            }
-        }
-        catch{
-            alert('errror')
+    // const handleSendSMS = async () => {
+    //     // Implement send SMS function
+    //     console.log('Sending SMS...');
+    //     let smsPayload = {
+    //         'to': '+91' + selectedAppointmentData.patient.mobile_number,
+    //         'body': changeValue || prescription
+    //     };
+    //     console.log(smsPayload);
+    //     try {
+    //         const response = await axios.post(`${apiConfig.baseURL}/user/api/send-sms/`, smsPayload);
+    //         console.log(response);
+    //         if (response.status === 200) {
+    //             alert('success');
+    //             onClose(); // Close the dialog after updating
+    //         }
+    //     } catch {
+    //         alert('error');
+    //     }
+    // };
 
-        }
-    };
-
-    const handleSendWhatsApp = async() => {
-        // Implement send WhatsApp function
-        console.log('Sending WhatsApp message...');
-        let whatsAppPayload = {
-            'to': '+91' + selectedAppointmentData.patient.mobile_number,
-            'body': changeValue || prescription
-        }
-        console.log(whatsAppPayload)
-        try{
-            const response = await axios.post(`${apiConfig.baseURL}/user/api/send-whatsapp/`,whatsAppPayload)
-            console.log(response)
-            if (response.status==200){
-                alert('success')
-                onClose(); // Close the dialog after updating
-
-            }
-        }
-        catch{
-            alert('errror')
-        }
-    };
-
-    return (
-        <Dialog fullWidth open={open} onClose={onClose}>
-            <DialogTitle>Prescription</DialogTitle>
-            <br />
-            <DialogContent>
-                <TextField
-                    multiline
-                    fullWidth
-                    onChange={handleChangePrescription}
-                    defaultValue={prescription}
-                />
-            </DialogContent>
-            <DialogActions>
-            <IconButton onClick={handleSendEmail} color="primary">
-                    <EmailIcon />
-                </IconButton>
-                <IconButton onClick={handleSendSMS} color="primary">
-                    <SmsIcon />
-                </IconButton>
-                <IconButton onClick={handleSendWhatsApp} color="primary">
-                    <WhatsAppIcon />
-                </IconButton>
-                <Button onClick={onClose} variant='contained' color="primary">
-                    Close
-                </Button>
-                <Button onClick={handleUpdate} variant='contained' color="primary">
-                    Update
-                </Button>
-                
-            </DialogActions>
-        </Dialog>
-    );
+    // const handleSendWhatsApp = async () => {
+    //     // Implement send WhatsApp function
+    //     console.log('Sending WhatsApp message...');
+    //     let whatsAppPayload = {
+    //         'to': '+91' + selectedAppointmentData.patient.mobile_number,
+    //         'body': changeValue || prescription
+    //     };
+    //     console.log(whatsAppPayload);
+    //     try {
+    //         const response = await axios.post(`${apiConfig.baseURL}/user/api/send-whatsapp/`, whatsAppPayload);
+    //         console.log(response);
+    //         if (response.status === 200) {
+    //             alert('success');
+    //             onClose(); // Close the dialog after updating
+    //         }
+    //     } catch {
+    //         alert('error');
+    //     }
+    // };
+    // const handleGeneratePDF = async () => {
+    //     const pdfPayload = {
+    //         hospital_name: 'Medi Mind',
+    //         hospital_address: 'Banjarahills',
+    //         doctor_name: 'Ramesh',
+    //         doctor_specialization: 'Neurology',
+    //         prescription: changeValue || prescription,
+    //     };
+    
+    //     try {
+    //         // Fetch CSRF token from the cookie
+    //         const csrftoken = getCookie('csrftoken');
+    
+    //         // Include CSRF token in the request headers
+    //         const response = await axios.post(
+    //             `${apiConfig.baseURL}/patient/generate-pdf/`,
+    //             pdfPayload,
+    //             {
+    //                 headers: {
+    //                     'X-CSRFToken': csrftoken,
+    //                 },
+    //                 responseType: 'blob', // Set response type to blob for binary data
+    //             }
+    //         );
+    
+    //         const url = window.URL.createObjectURL(new Blob([response.data])); // Create URL for blob data
+    //         const link = document.createElement('a');
+    //         link.href = url;
+    //         link.setAttribute('download', 'prescription.pdf'); // Set filename for download
+    //         document.body.appendChild(link);
+    //         link.click(); // Trigger download
+    //     } catch (error) {
+    //         alert('Error generating PDF');
+    //     }
+    // };
+    
+    // // Function to retrieve CSRF token from cookies
+    // function getCookie(name) {
+    //     const value = `; ${document.cookie}`;
+    //     const parts = value.split(`; ${name}=`);
+    //     if (parts.length === 2) return parts.pop().split(';').shift();
+    // }
+    
+    // return (
+    //     <Dialog fullWidth open={open} onClose={onClose}>
+    //         <DialogTitle>Prescription</DialogTitle>
+    //         <DialogContent>
+    //             <textarea
+    //                 rows="6"
+    //                 cols="50"
+    //                 onChange={handleChangePrescription}
+    //                 defaultValue={prescription}
+    //             />
+    //         </DialogContent>
+    //         <DialogActions>
+    //             <IconButton onClick={handleSendEmail} color="primary">
+    //                 <EmailIcon />
+    //             </IconButton>
+    //             <IconButton onClick={handleSendSMS} color="primary">
+    //                 <SmsIcon />
+    //             </IconButton>
+    //             <IconButton onClick={handleSendWhatsApp} color="primary">
+    //                 <WhatsAppIcon />
+    //             </IconButton>
+    //             <Button onClick={handleGeneratePDF} variant="contained" color="primary">
+    //                 Download PDF
+    //             </Button>
+    //             <Button onClick={onClose} variant="contained" color="primary">
+    //                 Close
+    //             </Button>
+    //             <Button onClick={handleUpdate} variant="contained" color="primary">
+    //                 Update
+    //             </Button>
+    //         </DialogActions>
+    //     </Dialog>
+    // );
 };
+
 const PatientDetailsComponent = () => {
     const { id } = useParams(); // Get the patient ID from the URL
     const [patientDetails, setPatientDetails] = useState({})
@@ -156,10 +197,11 @@ const PatientDetailsComponent = () => {
     }
     const handleViewPrescription = async (appointment_id) => {
         let data = appointments.find((appointment) => appointment.id == appointment_id)
-        setSelectedAppointmentData(data)
-        setViewPrescription(data.prescription)
-        setOpenPrescription(true)
-        setSelectedAppointmentID(appointment_id)
+        // setSelectedAppointmentData(data)
+        // setViewPrescription(data.prescription)
+        // setOpenPrescription(true)
+        // setSelectedAppointmentID(appointment_id)
+        window.open(`http://localhost:8000/media/${data.patient.patient_name}_prescription${data.id}.pdf`)
 
     }
 
@@ -318,7 +360,7 @@ const PatientDetailsComponent = () => {
                     />
                 )}
             </Paper>
-            <PrescriptionDialog selectedAppointmentData={selectedAppointmentData} prescription={viewPrescription} open={openPrescription} onClose={() => setOpenPrescription(false)} onUpdate={handleUpdatePrescription} />
+            {/* <PrescriptionDialog selectedAppointmentData={selectedAppointmentData} prescription={viewPrescription} open={openPrescription} onClose={() => setOpenPrescription(false)} onUpdate={handleUpdatePrescription} /> */}
             <Snackbar
                 anchorOrigin={{
                     vertical: 'top',

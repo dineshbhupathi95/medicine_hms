@@ -12,6 +12,11 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from io import BytesIO
 import json
+from weasyprint import HTML
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from usermanagement.models import OrganizationDetails
+
 
 class PatientCreateAPIView(generics.ListCreateAPIView):
     queryset = Patients.objects.all()
@@ -53,21 +58,46 @@ class AppointmentUpdateView(generics.UpdateAPIView):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
 
+    def generate_pdf(self, html_data, instance):
+        pdf_file = default_storage.open(f'{instance.patient.patient_name}_prescription{instance.id}.pdf',
+                                        'wb')  # Open a file-like object for writing
+        HTML(string=html_data).write_pdf(pdf_file)  # Write PDF data to the file-like object
+        pdf_file.close()  # Close the file-like object
+        return f'{instance.patient.patient_name}_prescription{instance.id}.pdf'
+
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        print(request.data)
+        # Render HTML template with appointment data
+        html_data = self.render_html(instance,request.data)
+
+        # Generate PDF from HTML and save to prescription_pdf field
+        pdf_filename = self.generate_pdf(html_data, instance)
+        print(pdf_filename)
+        instance.prescription_pdf.save(pdf_filename, ContentFile(default_storage.open(pdf_filename, 'rb').read()),
+                                       save=False)
+
+        serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
+
         return Response(serializer.data)
 
-    def perform_update(self, serializer):
-        serializer.save()
-
-    def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = AppointmentRetrivalSerializer(instance)
-        return Response(serializer.data)
+    def render_html(self, instance,request_data):
+        # Render HTML template with appointment data
+        organization_details = OrganizationDetails.objects.all()[0]
+        context = {
+            'hospital_name': organization_details.organization_name,
+            'hospital_address': f'{organization_details.road_number},{organization_details.street},{organization_details.city},{organization_details.country},ZipCode {organization_details.zip_code},{organization_details.phone_number}',
+            'patient': f'{instance.patient.patient_name}/ Age: {instance.patient.age} \n Mob Number: {instance.patient.mobile_number}',
+            'doctor': instance.doctor,
+            'specialization': instance.doctor.department.name,
+            'appointment_date': f'{instance.appointment_date} || {instance.appointment_time}',
+            'appointment_time': instance.appointment_time,
+            'prescription': request_data.get('prescription'),
+        }
+        html_template = 'appointment_template.html'
+        return render_to_string(html_template, context)
 
 
 class DoctorPatientsAPIView(generics.ListAPIView):
@@ -123,7 +153,6 @@ class RecentAppointments(generics.ListAPIView):
     serializer_class = AppointmentRetrivalSerializer
 
 
-
 class AppointmentDashboard(generics.ListAPIView):
     def get_queryset(self):
         queryset = Appointment.objects.all()
@@ -157,7 +186,9 @@ class AppointmentDashboard(generics.ListAPIView):
 
         return Response({'total_count': total_count, 'dashboard_counts': all_counts})
 
+
 from django.template.loader import render_to_string
+
 
 def generate_pdf(request):
     if request.method == 'POST':

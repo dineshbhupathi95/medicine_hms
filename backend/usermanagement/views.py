@@ -33,6 +33,9 @@ class DepartmentView(generics.ListCreateAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
 
+class OrganizationView(generics.ListCreateAPIView):
+    queryset = OrganizationDetails.objects.all()
+    serializer_class = OrganizationDetailsSerializer
 
 class Login(generics.views.APIView):
     def post(self, request):

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Appointment Prescription</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            position: relative; /* Set body to relative positioning */
+            min-height: 100vh; /* Set minimum height of body to full viewport height */
+        }
+        h1 {
+            color: #333;
+            text-align: center; /* Center the heading */
+        }
+        .container {
+            display: flex;
+            justify-content: space-between; /* Align items with space between */
+            align-items: center; /* Center items vertically */
+            margin-bottom: 20px; /* Add some margin between sections */
+        }
+        .left-section, .right-section {
+            flex: 1; /* Distribute remaining space equally */
+        }
+        .right-section {
+            text-align: right; /* Right align text in right section */
+        }
+        .row {
+            clear: both;
+            margin-bottom: 10px;
+            overflow: hidden; /* Clear floats */
+            position: relative; /* Add relative positioning */
+        }
+        .left {
+            float: left; /* Align left */
+        }
+        .right {
+            float: right; /* Align right */
+        }
+        .line {
+            clear: both;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        /* Add more CSS styles as needed */
+        .line-full {
+            position: absolute; /* Set absolute positioning */
+            left: 0; /* Align to left */
+            width: 100%; /* Set width to 100% */
+        }
+        .medication-container {
+            display: flex;
+            justify-content: space-around; /* Distribute space around items */
+            border-top: 1px solid black; /* Add top border */
+            border-bottom: 1px solid black; /* Add bottom border */
+            padding: 10px 0; /* Add padding */
+        }
+        .medication-container div {
+            flex: 1; /* Distribute remaining space equally */
+            text-align: center; /* Center text */
+        }
+        .medication-heading {
+            font-weight: bold;
+        }
+        footer {
+            position: absolute; /* Set footer to absolute positioning */
+            bottom: 0; /* Align footer to the bottom */
+            width: 100%; /* Set width to full */
+            text-align: center; /* Center text */
+            background-color: #f4f4f4; /* Add background color */
+            padding: 0 0; /* Add padding */
+        }
+    </style>
+</head>
+<body>
+    <h1>Prescription</h1>
+    <div class="container">
+        <div class="left-section">
+            <p>Doctor Name: {{ doctor }}</p>
+            <p>Specialization: {{ specialization }}</p>
+        </div>
+        <div class="right-section">
+            <p>Hospital Name: {{ hospital_name }}</p>
+            <p>Hospital Address: {{ hospital_address }}</p>
+        </div>
+    </div>
+    <div class="line"><hr></div> <!-- Add a horizontal line -->
+    <div class="row">
+        <div class="left">
+            <h4>Patient Name: {{ patient }}</h4>
+            <p>Weight (kg): 80, Height(Cm): 200 (B.M.I = 20.00 ), BP = 120/80 mmHg</p>
+        </div>
+        <div class="right"><h4>Date and Time</h4><p>{{ appointment_date }}</p></div>
+    </div>
+    <div class="line"><hr></div> <!-- Add a horizontal line -->
+    <div class="row">
+        <div class="left">
+            <h4>Chief Complaints </h4>
+            <p>*FEVER WITH CHILLS (4 DAYS)</p>
+            <p>*HEADACHE(2 DAYS)</p>
+            <div class="line-full"><hr></div> <!-- Add a horizontal line -->
+        </div>
+        <div class="right">
+            <h4>Clinical Findings </h4>
+            <p>*THESE ARE TEST FINDINGS FOR TEST PATIENT</p>
+            <p>*ENTERING SAMPLE PRESCRIPTION</p>
+            <div class="line-full"><hr></div> <!-- Add a horizontal line -->
+        </div>
+    </div>
+    <div class="line-full"><hr></div> <!-- Add a horizontal line -->
+    <br>
+    <h4>Diagnosis</h4>
+    <p>Malaria</p>
+    <div class="line"><hr></div> <!-- Add a horizontal line -->
+    <div class="medication-container">
+        <div>
+            <h4 class="medication-heading">Medicine Name</h4>
+            <p>{{prescription}}</p>
+            <p>Medicine 2</p>
+        </div>
+        <div>
+            <h4 class="medication-heading">Dosage</h4>
+            <p>2 tablets</p>
+            <p>1 tablet</p>
+        </div>
+        <div>
+            <h4 class="medication-heading">Duration</h4>
+            <p>Twice a day</p>
+            <p>Once a day</p>
+        </div>
+    </div>
+    <div class="line"><hr></div> <!-- Add a horizontal line -->
+<div>
+    <h4>Advice</h4>
+    <p>* Take bed rest</p>
+    <p>* Do not eat outside food</p>
+<!--    <p>* Take bed rest</p>-->
+</div>
+<div>
+    <h4>Follow Up Date: </h4>
+</div>
+<footer>
+    @2024 medimind
+</footer>
+</body>
+</html>

@@ -44,10 +44,10 @@ function App() {
           <div className="content">
             <Routes>
               <Route
-                path='/login'
+                path='/'
                 element={<LoginPage />}
               />
-              <Route path='/' element={<Dashboard />} />
+              <Route path='/dashboard' element={<Dashboard />} />
               <Route path='/patients' element={<PatientPage />} />
               <Route path='/admin' element={<AdminPage />} />
               <Route path='/admin/campaign' element={<CampaignComponent />} />

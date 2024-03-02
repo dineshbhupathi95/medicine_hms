@@ -30,4 +30,7 @@ class Appointment(models.Model):
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
     prescription = models.TextField(null=True, blank=True)
+    prescription_pdf = models.FileField(upload_to='prescriptions/', null=True, blank=True)
+
+
 

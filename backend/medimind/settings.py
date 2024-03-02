@@ -25,8 +25,8 @@ SECRET_KEY = 'django-insecure-^=eaf0a&r!t5_v46xvura@8@ekvfh1)cr^$*bqhm4vsc4-jlt1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
-
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok.io']
+# Forwarding                    https://9be8-103-95-173-169.ngrok-free.app -> http://localhost:8000
 ALLOWED_HOSTS = ['*']
 
     # sudo nano /etc/nginx/sites-available/medimind
@@ -157,6 +157,9 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'static')
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 # Default primary key field type

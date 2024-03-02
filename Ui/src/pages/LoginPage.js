@@ -50,10 +50,10 @@ function LoginPage() {
     const user = localStorage.getItem('user');
     if (user) {
       setLoggedIn(true);
-      navigate("/")
+      navigate("/dashboard")
       
     }else{
-      navigate("/login")
+      navigate("/")
     }
   }, []); 
   const handleSubmit = async (event) => {

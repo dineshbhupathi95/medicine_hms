@@ -8,7 +8,10 @@ class DepartmentSerializer(serializers.ModelSerializer):
         model = Department
         fields = serializers.ALL_FIELDS
 
-
+class OrganizationDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrganizationDetails
+        fields = serializers.ALL_FIELDS
 class UserSerializer(serializers.ModelSerializer):
     department = serializers.PrimaryKeyRelatedField(
         queryset=Department.objects.all())  # Use PrimaryKeyRelatedField for dropdown

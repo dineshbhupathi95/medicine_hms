@@ -36,7 +36,7 @@ function TopBar() {
       });
       console.log(response)
       localStorage.removeItem('user')
-      window.location.href = '/login'; //Will take you to Google.
+      window.location.href = '/'; //Will take you to Google.
       // Handle successful login, e.g., redirect to dashboard
   } catch (error) {
       console.error('Login error:', error);
