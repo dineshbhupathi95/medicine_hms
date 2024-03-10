@@ -96,7 +96,7 @@ class AppointmentUpdateView(generics.UpdateAPIView):
             'appointment_time': instance.appointment_time,
             'prescription': request_data.get('prescription'),
         }
-        html_template = 'appointment_template.html'
+        html_template = 'appointment_defualt.html'
         return render_to_string(html_template, context)
 
 

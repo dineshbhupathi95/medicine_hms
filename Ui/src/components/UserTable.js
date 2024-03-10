@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import apiConfig from '../apiConfig';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, 
-  Grid, MenuItem, Select, FormControl, InputLabel,TableContainer,Paper,Table,TableHead,TableRow,TableCell,TableBody,IconButton } from '@mui/material';
+import {
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button,
+  Grid, MenuItem, Select, FormControl, InputLabel, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton
+} from '@mui/material';
 import { Pagination } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -51,6 +53,13 @@ const UserList = ({ userList }) => {
               <TableCell>Department</TableCell>
               <TableCell>Role</TableCell>
 
+              <TableCell>Qualification</TableCell>
+              <TableCell>Experience</TableCell>
+              <TableCell>OP Fee</TableCell>
+              <TableCell>Address</TableCell>
+              {/* <TableCell>Timings</TableCell> */}
+              
+
             </TableRow>
           </TableHead>
           <TableBody>
@@ -60,9 +69,20 @@ const UserList = ({ userList }) => {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.phone_number}</TableCell>
                 <TableCell>
-        {user.department ? user.department.name : 'N/A'}
-      </TableCell>
+                  {user.department ? user.department.name : 'N/A'}
+                </TableCell>
                 <TableCell>{user.role}</TableCell>
+
+                <TableCell>
+                  {user.qualification ? user.qualification.name : 'N/A'}
+                </TableCell>
+                <TableCell>{user.experience}</TableCell>
+                <TableCell>{user.op_fee}</TableCell>
+                <TableCell>{
+                `${user.road_number}-${user.street}-${user.city},${user.state},${user.country},zip_code${user.zip_code}`}
+                </TableCell>
+                {/* <TableCell>{`${user.start_time}-${user.end_time}`}</TableCell> */}
+
               </TableRow>
             ))}
           </TableBody>
@@ -92,6 +112,17 @@ const CreateUserForm = ({ open, handleClose }) => {
     password: '',
     department: '',
     role: '',
+    qualification:'',
+    experience: '',
+    op_fee: '',
+    road_number: '',
+    street: '',
+    city: '',
+    state: '',
+    zip_code: '',
+    country: '',
+    day_time_availability: '',
+    signature: '',
     start_time: '00:00:00',
     end_time: '00:00:00'
   });
@@ -102,7 +133,28 @@ const CreateUserForm = ({ open, handleClose }) => {
   const [phoneError, setPhoneError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [formErrors, setFormErrors] = useState({});
-
+  const [filterDepartments, setFilterDepartments] = useState([])
+  const [filterQualification, setFilterQualification] = useState([])
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await axios.get(`${apiConfig.baseURL}/user/api/department/`);
+        setFilterDepartments(response.data)
+      } catch (error) {
+        console.error('Error fetching departments:', error);
+      }
+    };
+    const fetchQualification = async () => {
+      try {
+        const response = await axios.get(`${apiConfig.baseURL}/user/api/qualification/`);
+        setFilterQualification(response.data)
+      } catch (error) {
+        console.error('Error fetching departments:', error);
+      }
+    };
+    fetchDepartments()
+    fetchQualification()
+  }, [])
   // Function to handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -146,7 +198,7 @@ const CreateUserForm = ({ open, handleClose }) => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-  
+
     // Check if the field is the phone number
     if (name === 'phone_number') {
       // Remove any non-digit characters from the input value
@@ -163,13 +215,45 @@ const CreateUserForm = ({ open, handleClose }) => {
       setFormData({ ...formData, [name]: value });
     }
   };
-  
+
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Create New User</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <FormControl fullWidth>
+                <InputLabel>Role</InputLabel>
+                <Select
+                  value={formData.role}
+                  onChange={handleChange}
+                  name="role"
+                >
+                  <MenuItem value="admin">Admin</MenuItem>
+                  <MenuItem value="branch_manager">Branch Manager</MenuItem>
+                  <MenuItem value="staff">Staff</MenuItem>
+                  <MenuItem value="doctor">Doctor</MenuItem>
+                  <MenuItem value="patients">Patients</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                select
+                label="Department"
+                fullWidth
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+              >
+                {filterDepartments.map((department) => (
+                  <MenuItem key={department.id} value={department.id}>
+                    {department.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
             <Grid item xs={6}>
               <TextField
                 label="First Name"
@@ -246,33 +330,130 @@ const CreateUserForm = ({ open, handleClose }) => {
               />
             </Grid>
             {/* Department and Role fields */}
-            <Grid item xs={6}>
-              <TextField
-                label="Department"
-                fullWidth
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl fullWidth>
-                <InputLabel>Role</InputLabel>
-                <Select
-                  value={formData.role}
-                  onChange={handleChange}
-                  name="role"
-                >
-                  <MenuItem value="admin">Admin</MenuItem>
-                  <MenuItem value="branch_manager">Branch Manager</MenuItem>
-                  <MenuItem value="staff">Staff</MenuItem>
-                  <MenuItem value="doctor">Doctor</MenuItem>
-                  <MenuItem value="patients">Patients</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
+
+
             {formData.role === 'doctor' && (
               <>
+                <Grid item xs={6}>
+                  <TextField
+                    select
+                    label="Qualification"
+                    fullWidth
+                    name="qualification"
+                    value={formData.qualification}
+                    onChange={handleChange}
+                  >
+                    {filterQualification.map((qualification) => (
+                      <MenuItem key={qualification.id} value={qualification.id}>
+                        {qualification.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="Experience"
+                    fullWidth
+                    name="experience"
+                    value={formData.experience}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="OP Fee"
+                    fullWidth
+                    name="op_fee"
+                    value={formData.op_fee}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="Road Number"
+                    fullWidth
+                    name="road_number"
+                    value={formData.road_number}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="Street"
+                    fullWidth
+                    name="street"
+                    value={formData.street}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="City"
+                    fullWidth
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="State"
+                    fullWidth
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    label="Zip Code"
+                    fullWidth
+                    name="zip_code"
+                    value={formData.zip_code}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="Country"
+                    fullWidth
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="Day Wise Time Availabilty"
+                    fullWidth
+                    name="day_time_availability"
+                    value={formData.day_time_availability}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="Signature"
+                    fullWidth
+                    name="signature"
+                    value={formData.signature}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
                 <Grid item xs={6}>
                   <TextField
                     label="Start Time"
@@ -346,7 +527,7 @@ const UserManagementPage = () => {
   return (
     <div>
       <Grid container spacing={2}>
-        <Grid item xs={12} align="right"> 
+        <Grid item xs={12} align="right">
           <Button variant="contained" color="primary" onClick={handleCreateUserClick}>Create New User</Button>
         </Grid>
         <Grid item xs={12}>

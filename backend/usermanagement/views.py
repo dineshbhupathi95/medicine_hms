@@ -37,6 +37,10 @@ class OrganizationView(generics.ListCreateAPIView):
     queryset = OrganizationDetails.objects.all()
     serializer_class = OrganizationDetailsSerializer
 
+class QualificationView(generics.ListCreateAPIView):
+    queryset = Qualification.objects.all()
+    serializer_class = QualificationSerializer
+
 class Login(generics.views.APIView):
     def post(self, request):
         if not request.data:

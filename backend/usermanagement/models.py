@@ -49,6 +49,13 @@ class Department(models.Model):
         return "{}".format(self.name)
 
 
+class Qualification(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
 class OrganizationDetails(models.Model):
     organization_name = models.CharField(max_length=100, null=True, blank=True)
     road_number = models.CharField(max_length=100, blank=True)
@@ -82,6 +89,17 @@ class User(AbstractUser):
     phone_number = models.CharField(blank=True, max_length=31)
     role = models.CharField(max_length=20, choices=USER_ROLE_CHOICES, default='regular')
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
+    qualification = models.ForeignKey(Qualification, on_delete=models.CASCADE, null=True)
+    experience = models.PositiveIntegerField(null=True, blank=True)
+    op_fee = models.CharField(max_length=100, null=True, blank=True)
+    road_number = models.CharField(max_length=100, blank=True)
+    street = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    zip_code = models.CharField(max_length=20, blank=True)
+    country = models.CharField(max_length=100, blank=True)
+    day_time_availability = models.CharField(max_length=100, null=True, blank=True)
+    signature = models.CharField(max_length=100, null=True, blank=True)
     start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
 

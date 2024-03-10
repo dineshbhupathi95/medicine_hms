@@ -110,12 +110,12 @@ const PrescriptionDialog = ({ selectedAppointmentData, prescription, open, onClo
     //     }
     // };
     
-    // // Function to retrieve CSRF token from cookies
-    // function getCookie(name) {
-    //     const value = `; ${document.cookie}`;
-    //     const parts = value.split(`; ${name}=`);
-    //     if (parts.length === 2) return parts.pop().split(';').shift();
-    // }
+    // Function to retrieve CSRF token from cookies
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
     
     // return (
     //     <Dialog fullWidth open={open} onClose={onClose}>
