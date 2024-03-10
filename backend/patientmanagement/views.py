@@ -72,6 +72,7 @@ class AppointmentUpdateView(generics.UpdateAPIView):
         html_data = self.render_html(instance,request.data)
 
         # Generate PDF from HTML and save to prescription_pdf field
+        print(html_data)
         pdf_filename = self.generate_pdf(html_data, instance)
         print(pdf_filename)
         instance.prescription_pdf.save(pdf_filename, ContentFile(default_storage.open(pdf_filename, 'rb').read()),

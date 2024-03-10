@@ -8,7 +8,6 @@
             font-family: Arial, sans-serif;
             font-size: 12px;
             position: relative; /* Set body to relative positioning */
-            min-height: 100vh; /* Set minimum height of body to full viewport height */
         }
         h1 {
             color: #333;
@@ -36,7 +35,7 @@
             margin-bottom: 10px;
         }
         footer {
-            position: absolute; /* Set footer to absolute positioning */
+            position: fixed; /* Set footer to absolute positioning */
             bottom: 0; /* Align footer to the bottom */
             width: 100%; /* Set width to full */
             text-align: center; /* Center text */
@@ -57,13 +56,21 @@
         }
 
         /* Define left and right divs */
-        .left-div, .right-div {
-            width: 50%; /* Set width to 50% */
+        .left-div {
+            width: 30%; /* Set width to 50% */
             float: left; /* Align left */
             padding: 20px; /* Add padding */
             box-sizing: border-box; /* Include padding in width calculation */
             position: relative; /* Set relative positioning */
-            height: calc(100vh - 80px); /* Set height to viewport height minus header and footer height */
+
+        }
+        .right-div {
+            width: 50%; /* Set width to 50% */
+            float: right; /* Align left */
+            padding: 20px; /* Add padding */
+            box-sizing: border-box; /* Include padding in width calculation */
+            position: relative; /* Set relative positioning */
+
         }
         .left-div:before {
             content: ''; /* Add content */
@@ -72,19 +79,25 @@
             bottom: 0; /* Align to bottom */
             width: 1px; /* Set width to 1px */
             background-color: #000; /* Set background color */
-            left: 50%; /* Align to middle */
+            left: 80%; /* Align to middle */
+            height: 100px;
             transform: translateX(-50%); /* Center horizontally */
         }
-        footer {
+        .footer-container {
             display: flex;
             justify-content: space-between;
-            position: absolute;
+            position: fixed;
             bottom: 0;
             width: 100%;
             padding: 10px;
             background-color: #f4f4f4;
         }
-        .footer-left-div, .footer-right-div {
+        .footer-left-div {
+            width: 50%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .footer-right-div {
             width: 50%;
             padding: 10px;
             box-sizing: border-box;
@@ -92,11 +105,7 @@
         .footer-left-div {
             border-right: 1px solid #000;
         }
-        .footer-right-div {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+
         h3 {
             color: #3281a8;
         }
@@ -107,7 +116,7 @@
 <div class="container">
     <div class="left-section">
         <div style="margin-top:30px">
-<!--            <img style="width:70px;height:50px" src="Apollo-hospital-logo.jpg.webp">-->
+            <img style="width:70px;height:50px" src="http://localhost:8000/media/images/Apollo Pharmacy_logo.png">
         </div>
         <div style="margin-left:30px;margin-top:30px">
             <h3>DR. {{ doctor }}</h3>
@@ -115,7 +124,7 @@
         </div>
     </div>
     <div class="right-section">
-<!--        <img style="width:50px;height:50px" src="Apollo-Clinic-Logo.png">-->
+        <img style="width:50px;height:50px" src="http://localhost:8000/media/images/Apollo-Clinic-Logo.png">
     </div>
 </div>
 <div class="line"><hr></div> <!-- Add a horizontal line -->
@@ -157,9 +166,9 @@
    <p>{{prescription}}</p>
 <!--    <p style="bottom:30px">Follow up date: </p>-->
 </div>
-<div class="line"><hr></div> <!-- Add a horizontal line -->
+<!--<div class="line"><hr></div> -->
 
-<footer>
+<div class="footer-container">
     <div class="footer-left-div">
         <h3>Apollo Clinic, Manikonda</h3>
         <p>#284, Shaikpet Main Rd, near Bhema Restaurant, OU Colony, Shaikpet</p>
@@ -171,6 +180,6 @@
         <p>Toll Number: 1800 200 200 </p>
         <p>Website: www.apolloclinic.com</p>
     </div>
-</footer>
+    </div>
 </body>
 </html>
