@@ -6,7 +6,7 @@ from usermanagement.serializers.user_serializer import UserRetrieveSerializer
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patients
-        fields = ['patient_name', 'mobile_number', 'age', 'gender']
+        fields = ['id','patient_name', 'mobile_number', 'age', 'gender','email','address']
 
 
 class PatientRetrivalSerializer(serializers.ModelSerializer):

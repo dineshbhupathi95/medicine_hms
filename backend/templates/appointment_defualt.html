@@ -66,7 +66,7 @@
         }
         .right-div {
             width: 50%; /* Set width to 50% */
-            float: right; /* Align left */
+            float: left; /* Align left */
             padding: 20px; /* Add padding */
             box-sizing: border-box; /* Include padding in width calculation */
             position: relative; /* Set relative positioning */
@@ -156,15 +156,59 @@
 
 <!-- Left div -->
 <div class="left-div">
-    <h2>General Examination/ Allergy History</h2>
+    <p>General Examination/ Allergy History</p>
 
 </div>
 
 <!-- Right div -->
 <div class="right-div">
-    <h2>Clinical Diagnosis/ Management Plan</h2>
-   <p>{{prescription}}</p>
-<!--    <p style="bottom:30px">Follow up date: </p>-->
+    <p>Clinical Diagnosis/ Management Plan</p>
+    <table>
+        <thead>
+        <tr>
+            <!-- Fixed table headers -->
+            <th>Medicine</th>
+            <th>Count</th>
+            <th>When to Take</th>
+        </tr>
+        </thead>
+        <tbody>
+            <!-- Loop through the values and render them as table rows -->
+            {% for value_list in pairs_list %}
+                <tr>
+                    <!-- Loop through each value in the value list and render as table data -->
+                    {% for value in value_list %}
+
+                        <td>{{ value|default_if_none:"[]" }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+<!--<table>-->
+<!--    <thead>-->
+<!--        <tr>-->
+<!--            &lt;!&ndash; Fixed table headers &ndash;&gt;-->
+<!--            <th>Medicine</th>-->
+<!--            <th>Count</th>-->
+<!--            <th>When to Take</th>-->
+<!--        </tr>-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--        &lt;!&ndash; Loop through the indices to ensure all rows have the same number of cells &ndash;&gt;-->
+<!--        {% for i in indices %}-->
+<!--            <tr>-->
+<!--                &lt;!&ndash; Render the value for each key at index i &ndash;&gt;-->
+<!--                <td>{{ prescription.medicine.i|default_if_none:"None" }}</td>-->
+<!--            <td>{{ prescription.count.i|default_if_none:"None" }}</td>-->
+<!--            <td>{{ prescription.when_to_take.i|default_if_none:"None" }}</td>-->
+<!--&lt;!&ndash;                <td>{{ i }}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>{{ i }}</td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>{{ i }}</td>&ndash;&gt;-->
+<!--            </tr>-->
+<!--        {% endfor %}-->
+<!--    </tbody>-->
+<!--</table>-->
+
 </div>
 <!--<div class="line"><hr></div> -->
 

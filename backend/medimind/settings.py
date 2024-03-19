@@ -40,14 +40,16 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    "daphne",
     'django.contrib.staticfiles',
-    'channels',
+    # 'channels',
     'rest_framework',
     'corsheaders',
     #'rest_framework_swagger',
     'usermanagement',
     'patientmanagement',
     'drf_yasg',
+
 ]
 
 MIDDLEWARE = [
@@ -94,6 +96,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'medimind.wsgi.application'
+ASGI_APPLICATION = 'usermanagement.routing.application'
 
 
 # Database
@@ -168,4 +171,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-ASGI_APPLICATION = 'usermanagement.routing.application'

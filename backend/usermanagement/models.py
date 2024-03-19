@@ -57,6 +57,10 @@ class Qualification(models.Model):
 
 
 class OrganizationDetails(models.Model):
+    ORG_TYPES = (
+        ('corporate', 'Corporate'),
+        ('individual','Individual'),
+    )
     organization_name = models.CharField(max_length=100, null=True, blank=True)
     road_number = models.CharField(max_length=100, blank=True)
     street = models.CharField(max_length=100, blank=True)
@@ -65,7 +69,13 @@ class OrganizationDetails(models.Model):
     zip_code = models.CharField(max_length=20, blank=True)
     country = models.CharField(max_length=100, blank=True)
     phone_number = models.CharField(max_length=100, blank=True)
+    org_logo = models.FileField(upload_to='images/', null=True, blank=True)
+    org_code = models.CharField(max_length=50, null=True, blank=True)
+    org_type = models.CharField(max_length=100,choices=ORG_TYPES, null=True, blank=True)
+    #logo field, org code, user linkup, org_type-indivisual,corporate
 
+    def __str__(self):
+        return self.organization_name
 
 class User(AbstractUser):
     USER_ROLE_CHOICES = (
@@ -73,7 +83,7 @@ class User(AbstractUser):
         ('branch_manager', 'Branch Manager'),
         ('staff', 'Staff'),
         ('doctor', 'Doctor'),
-        ('patients', 'Patients'),
+        # ('patients', 'Patients'),
     )
     """User model."""
     username = models.CharField(
@@ -89,6 +99,7 @@ class User(AbstractUser):
     phone_number = models.CharField(blank=True, max_length=31)
     role = models.CharField(max_length=20, choices=USER_ROLE_CHOICES, default='regular')
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
+    org = models.ForeignKey(OrganizationDetails, on_delete=models.CASCADE, null=True)
     qualification = models.ForeignKey(Qualification, on_delete=models.CASCADE, null=True)
     experience = models.PositiveIntegerField(null=True, blank=True)
     op_fee = models.CharField(max_length=100, null=True, blank=True)
@@ -102,6 +113,8 @@ class User(AbstractUser):
     signature = models.CharField(max_length=100, null=True, blank=True)
     start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
+    doc_uid = models.CharField(max_length=100,blank=True,null=True)
+    # doc_uid
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []

@@ -28,11 +28,11 @@ class UserSerializer(serializers.ModelSerializer):
         queryset=Qualification.objects.all())
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'username', 'email', 'role',
+        fields = ['id', 'first_name', 'last_name', 'username', 'email', 'role','org',
                   'password', 'phone_number', 'department',
                   'qualification', 'experience', 'op_fee', 'road_number', 'street', 'city',
                   'state', 'zip_code', 'country', 'day_time_availability', 'signature',
-                                                                           'start_time', 'end_time']
+                                                                           'start_time', 'end_time','doc_uid']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):

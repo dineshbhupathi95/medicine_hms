@@ -234,7 +234,7 @@ const CreateUserForm = ({ open, handleClose }) => {
                   <MenuItem value="branch_manager">Branch Manager</MenuItem>
                   <MenuItem value="staff">Staff</MenuItem>
                   <MenuItem value="doctor">Doctor</MenuItem>
-                  <MenuItem value="patients">Patients</MenuItem>
+                  {/* <MenuItem value="patients">Patients</MenuItem> */}
                 </Select>
               </FormControl>
             </Grid>

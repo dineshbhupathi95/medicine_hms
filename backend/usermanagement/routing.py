@@ -1,6 +1,8 @@
 
 # routing.py
 from channels.routing import ProtocolTypeRouter, URLRouter
+from django.core.asgi import get_asgi_application
+
 from django.urls import re_path
 from .consumers import TranscriptionConsumer
 
@@ -9,5 +11,6 @@ websocket_urlpatterns = [
 ]
 
 application = ProtocolTypeRouter({
+    'http':get_asgi_application(),
     'websocket': URLRouter(websocket_urlpatterns),
 })

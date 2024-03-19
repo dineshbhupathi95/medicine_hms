@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import logo from '../static/images/med.jpeg';
+import logo from '../static/images/medimind.png';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import apiConfig from '../apiConfig';
@@ -47,7 +47,7 @@ function TopBar() {
   };
 
   return (
-    <AppBar position="fixed" style={{backgroundColor:"#02184d"}}>
+    <AppBar position="fixed" style={{backgroundColor:"#15181f"}}>
       <Toolbar>
         {/* Display logo image */}
         <img src={logo} alt="Logo" style={{ height: 40, marginRight: 10 }} />

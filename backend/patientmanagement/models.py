@@ -11,6 +11,8 @@ class Patients(models.Model):
     mobile_number = models.CharField(max_length=31)
     age = models.PositiveIntegerField(null=True, blank=True)
     gender = models.CharField(max_length=50, null=True, blank=True)
+    email = models.CharField(max_length=100,null=True,blank=True)
+    address = models.CharField(max_length=250,null=True,blank=True)
 
     def save(self, *args, **kwargs):
         if not self.patient_id:  # Generate patient ID if not provided
@@ -30,6 +32,9 @@ class Appointment(models.Model):
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
     prescription = models.TextField(null=True, blank=True)
+    weight = models.CharField(max_length=50,blank=True,null=True)
+    bp = models.CharField(max_length=50, blank=True, null=True)
+    temp = models.CharField(max_length=50, blank=True, null=True)
     prescription_pdf = models.FileField(upload_to='prescriptions/', null=True, blank=True)
 
 

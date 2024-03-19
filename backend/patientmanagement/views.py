@@ -16,6 +16,8 @@ from weasyprint import HTML
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from usermanagement.models import OrganizationDetails
+import spacy
+from django.db.models import Q
 
 
 class PatientCreateAPIView(generics.ListCreateAPIView):
@@ -68,13 +70,21 @@ class AppointmentUpdateView(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         print(request.data)
+
+        nlp1 = spacy.load("/Users/dineshbhupathi/Documents/medimind/model-best 2")  # load the best model
+        input_text =request.data.get('prescription')
+        print(input_text)
+        doc = nlp1(input_text)  # input sample text
+
+        prescription_data = spacy.displacy.parse_ents(doc)
+        # print(prescription_data)
         # Render HTML template with appointment data
-        html_data = self.render_html(instance,request.data)
+        html_data = self.render_html(instance,request.data,prescription_data)
 
         # Generate PDF from HTML and save to prescription_pdf field
-        print(html_data)
+        # print(html_data)
         pdf_filename = self.generate_pdf(html_data, instance)
-        print(pdf_filename)
+        # print(pdf_filename)
         instance.prescription_pdf.save(pdf_filename, ContentFile(default_storage.open(pdf_filename, 'rb').read()),
                                        save=False)
 
@@ -84,8 +94,87 @@ class AppointmentUpdateView(generics.UpdateAPIView):
 
         return Response(serializer.data)
 
-    def render_html(self, instance,request_data):
+    def render_html(self, instance,request_data,prescription_data):
         # Render HTML template with appointment data
+        prescription_dic = {
+            "medicine":[],
+            "count":[],
+            "when_to_take":[]
+        }
+        prescription_str = request_data.get('prescription')
+        entities = prescription_data.get('ents')
+        # print(entities)
+        # for entity in entities:
+        #     print(entity)
+        #     if entity.get('label') == 'MEDICINE':
+        #         temp = prescription_str[entity.get("start"):entity.get("end")]
+        #         prescription_dic['medicine'].append(temp)
+        #
+        #     if entity.get('label') == 'COUNT':
+        #         temp = prescription_str[entity.get("start"):entity.get("end")]
+        #         prescription_dic['count'].append(temp)
+        #
+        #     if entity.get('label') == 'WHEN_TO_TAKE':
+        #         temp = prescription_str[entity.get("start"):entity.get("end")]
+        #         prescription_dic['when_to_take'].append(temp)
+
+        # Function to chunk a list into groups of n
+        def chunk_list(lst, n):
+            for i in range(0, len(lst), n):
+                yield lst[i:i + n]
+
+        # Chunking the list into groups of 3
+        chunked_list = list(chunk_list(entities, 3))
+
+        # Printing the chunked list
+        for chunks in chunked_list:
+            print(chunks)
+            if len(chunks) == 3:
+                for chunk in chunks:
+                    print(chunk)
+                    if chunk.get('label') == 'MEDICINE':
+                        temp = prescription_str[chunk.get("start"):chunk.get("end")]
+                        prescription_dic['medicine'].append(temp)
+                    if chunk.get('label') == 'COUNT':
+                        temp = prescription_str[chunk.get("start"):chunk.get("end")]
+                        prescription_dic['count'].append(temp)
+                        # else:
+                        #     prescription_dic['count'].append("None")
+
+                    if chunk.get('label') == 'WHEN_TO_TAKE':
+                        temp = prescription_str[chunk.get("start"):chunk.get("end")]
+                        prescription_dic['when_to_take'].append(temp)
+                        # else:
+                        #     prescription_dic['when_to_take'].append("None")
+
+                    #
+                    # else:
+                    #     pass
+        print(prescription_dic)
+        range_count = 0
+        for co in prescription_dic.values():
+            if range_count <= len(co):
+                range_count = len(co)
+        max_length = max(len(v) for v in prescription_dic.values())
+
+        # Pad the lists with 'None' if their lengths are less than max_length
+        for key, value_list in prescription_dic.items():
+            prescription_dic[key] += ['None'] * (max_length - len(value_list))
+
+        # Create a list of indices from 0 to max_length - 1
+        indices = list(range(max_length))
+        print(indices)
+        # Create a list to store pairs
+        pairs_list = []
+
+        # Iterate over the indices of the lists
+        for i in range(len(prescription_dic['medicine'])):
+            # Get the pair of values at index i from each list
+            pair = (prescription_dic['medicine'][i], prescription_dic['count'][i], prescription_dic['when_to_take'][i])
+            # Append the pair to the pairs_list
+            pairs_list.append(pair)
+
+        # prescription_dic['medicine'] =
         organization_details = OrganizationDetails.objects.all()[0]
         context = {
             'hospital_name': organization_details.organization_name,
@@ -95,7 +184,10 @@ class AppointmentUpdateView(generics.UpdateAPIView):
             'specialization': instance.doctor.department.name,
             'appointment_date': f'{instance.appointment_date} || {instance.appointment_time}',
             'appointment_time': instance.appointment_time,
-            'prescription': request_data.get('prescription'),
+            'prescription': prescription_dic,
+            'range_count':range_count,
+            'indices': indices,
+            'pairs_list':pairs_list
         }
         html_template = 'appointment_defualt.html'
         return render_to_string(html_template, context)
@@ -157,22 +249,34 @@ class RecentAppointments(generics.ListAPIView):
 class AppointmentDashboard(generics.ListAPIView):
     def get_queryset(self):
         queryset = Appointment.objects.all()
-        # Get the date from query parameters
-        date_str = self.request.query_params.get('date')
-        if date_str:
+        # Get the date and doctor_id from query parameters
+        # date_str = self.request.query_params.get('date')
+        doctor_id = self.request.query_params.get('doctor_id')
+        department = self.request.query_params.get('department')
+        print(doctor_id)
+        if doctor_id:
             try:
-                date = datetime.strptime(date_str, '%Y-%m-%d').date()
-                queryset = queryset.filter(appointment_date=date)
-            except ValueError:
+                # date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                # print(date)
+                # Convert doctor_id to integer
+                doctor_id = int(doctor_id) if doctor_id else None
+                # Filter queryset based on appointment date or doctor ID
+                print(doctor_id,department)
+                queryset = queryset.filter(doctor__id=doctor_id)
+                print(queryset)
+            except ValueError as e:
+                print(e)
                 pass  # Handle invalid date format gracefully
-        return queryset
+        if department:
+            queryset = queryset.filter(doctor_id__department__id=department)
 
+        return queryset
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 
         # Count appointments for each doctor
         doctor_counts = queryset.values('doctor__username').annotate(appointment_count=Count('id'))
-        print(doctor_counts)
+        # print(doctor_counts)
         doctor_wise_counts = [{'label': item['doctor__username'], 'value': item['appointment_count']} for item in
                               doctor_counts]
 
