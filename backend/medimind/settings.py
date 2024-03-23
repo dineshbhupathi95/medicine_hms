@@ -68,6 +68,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:8000',# Allow requests from the React development server
     "http://164.52.201.185:8001",
+"http://164.52.193.26",
+"http://164.52.193.26:8001",
+"http://164.52.193.26:8000"
 
 ]
 # CSRF_TRUSTED_ORIGINS = ['http://localhost:3000','https://*.mydomain.com','http://*.127.0.0.1']
