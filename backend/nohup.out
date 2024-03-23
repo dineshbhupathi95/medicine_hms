@@ -38,3 +38,11 @@ Watching for file changes with StatReloader
 [23/Mar/2024 08:36:59] "POST /api/user/api/logout/ HTTP/1.1" 200 37
 [23/Mar/2024 08:42:14] code 400, message Bad HTTP/0.9 request type ('\x16\x03\x01\x00{\x01\x00\x00w\x03\x03\x08\x87B\x84/nK£äÃ\x8e\x86À\x17\x83\x87´¹·\x026\x8eùTz-\x90EºÇT¸\x00\x00\x1aÀ/À+À\x11À\x07À\x13À')
 [23/Mar/2024 08:42:14] You're accessing the development server over HTTPS, but it only supports HTTP.
+[23/Mar/2024 08:49:37] "OPTIONS /api/user/api/login/ HTTP/1.1" 200 0
+[23/Mar/2024 08:49:38] "POST /api/user/api/login/ HTTP/1.1" 200 49
+[23/Mar/2024 08:49:38] "GET /api/patient/api/doctor/2/patients/?appointment_date=2024-03-23 HTTP/1.1" 200 1453
+[23/Mar/2024 08:49:42] "GET /api/patient/api/doctor/2/patients/?appointment_date=2024-03-10 HTTP/1.1" 200 717
+[23/Mar/2024 08:49:44] "GET /api/patient/api/patient-details/2 HTTP/1.1" 200 3142
+[23/Mar/2024 08:49:46] "GET /media/rohan_prescription2.pdf HTTP/1.1" 200 7909
+[23/Mar/2024 08:49:53] "GET /media/rohan_prescription6.pdf HTTP/1.1" 200 215204
+[23/Mar/2024 08:49:53] "GET /media/rohan_prescription6.pdf HTTP/1.1" 200 215204

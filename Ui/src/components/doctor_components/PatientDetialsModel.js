@@ -203,7 +203,7 @@ const PatientDetailsComponent = () => {
         // setViewPrescription(data.prescription)
         // setOpenPrescription(true)
         // setSelectedAppointmentID(appointment_id)
-        window.open(`http://localhost:8000/media/${data.patient.patient_name}_prescription${data.id}.pdf`)
+        window.open(`http://164.52.193.26:8001/media/${data.patient.patient_name}_prescription${data.id}.pdf`)
 
     }
 
