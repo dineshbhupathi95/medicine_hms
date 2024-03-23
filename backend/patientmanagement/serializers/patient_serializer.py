@@ -54,5 +54,5 @@ class PatientDetailsSerializer(serializers.ModelSerializer):
         fields = ['id', 'patient_id', 'patient_name', 'mobile_number', 'age', 'gender', 'appointments']
 
     def get_appointments(self, obj):
-        appointments = Appointment.objects.filter(patient_id=obj.id)
+        appointments = Appointment.objects.filter(patient_id=obj.id).order_by('-appointment_date')
         return AppointmentRetrivalSerializer(appointments, many=True).data

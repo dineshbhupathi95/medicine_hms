@@ -14,8 +14,11 @@ import './App.css';
 import CampaignComponent from './components/admin_components/Campain';
 import DoctorDashboard from './components/doctor_components/DoctorDashboard';
 import PatientDetailsComponent from './components/doctor_components/PatientDetialsModel';
+import DepartmentList from './components/Department.js';
+import QualificationList from './components/QualificationComponent.js';
 import PageNotFound from './pages/PageNotFound';
 import TestApp from './components/TestVoice';
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [userObj,setUserObj] = useState()
@@ -53,6 +56,8 @@ function App() {
               <Route path='/admin/campaign' element={<CampaignComponent />} />
               <Route path='/reports' element={<Report />} />
               <Route path='/doctor' element={<DoctorDashboard />} />
+              <Route path='/department' element={<DepartmentList />} />
+              <Route path='/qualification' element={<QualificationList/>} />
               <Route path='/patient-history/:id' element={<PatientDetailsComponent />} /> 
               <Route path='/page-not-found' element={<PageNotFound />} /> 
 

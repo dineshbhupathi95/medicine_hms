@@ -7,6 +7,8 @@ import CreatePatientForm from './patientForm/PatientForm';
 import AppointmentScheduleDialog from './patientForm/AppointmentDialog';
 import TopBar from './Topbar';
 import Sidebar from './Sidebar';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import Snackbar from '@mui/material/Snackbar';
 
 const PatientList = ({ patientList }) => {
   const [page, setPage] = useState(1);
@@ -60,7 +62,11 @@ const PatientList = ({ patientList }) => {
           <TableBody>
             {paginatedPatients.map((patient) => (
               <TableRow key={patient.id}>
-                <TableCell>{patient.patient_id}</TableCell>
+                <TableCell>
+                  {/* {patient.patient_id} */}
+                  <Link to={`/patient-history/${patient.id}`}>{patient.patient_id}</Link>
+                  </TableCell>
+                
                 <TableCell>{patient.patient_name}</TableCell>
                 <TableCell>{patient.mobile_number}</TableCell>
                 <TableCell>
@@ -93,6 +99,8 @@ const PatientTable = () => {
   const [patientList, setPatientList] = useState([])
   const [open, setOpen] = useState(false); // State to control dialog visibility
   const [appointmentOpen,setAppointmentOpen] = useState(false)
+  const [snackOpen, setSnackOpen] = useState(false)
+  const [snackAppointmentOpen,setSnackAppointmentOpen] = useState(false)
 
   useEffect(() => {
     getPatientData()
@@ -121,7 +129,19 @@ const PatientTable = () => {
   const handleAppointmentClick = () =>{
     setAppointmentOpen(true)
   }
+  const handlePatientCreated = (newPatient) => {
+    console.log(newPatient)
+    // Update the patient list in the parent component with the new patient
+    setPatientList(newPatient);
+  };
 
+  const handleSnackClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackAppointmentOpen(false)
+    setSnackOpen(false);
+  };
   return (
     <div>
       <Grid container spacing={2}>
@@ -133,9 +153,20 @@ const PatientTable = () => {
           <PatientList patientList={patientList} />
         </Grid>
       </Grid>
-      
-      <AppointmentScheduleDialog open={appointmentOpen} handleClose={handleClose} /> 
-      <CreatePatientForm open={open} handleClose={handleClose} /> 
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={5000}
+        onClose={handleSnackClose}
+        message="Patient created successfully."
+      />
+      <Snackbar
+        open={snackAppointmentOpen}
+        autoHideDuration={5000}
+        onClose={handleSnackClose}
+        message="Appointment Scheduled."
+      />
+      <AppointmentScheduleDialog open={appointmentOpen} setSnackAppointmentOpen={setSnackAppointmentOpen} handleClose={handleClose} /> 
+      <CreatePatientForm open={open} handleClose={handleClose} setSnackOpen={setSnackOpen} setSnackAppointmentOpen={setSnackAppointmentOpen} setPatientList={handlePatientCreated} /> 
     </div>
   );
 };

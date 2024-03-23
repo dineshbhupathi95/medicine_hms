@@ -8,6 +8,7 @@ import {
 import { Pagination } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import Snackbar from '@mui/material/Snackbar';
 
 
 
@@ -102,7 +103,7 @@ const UserList = ({ userList }) => {
   );
 };
 
-const CreateUserForm = ({ open, handleClose }) => {
+const CreateUserForm = ({ open, setSnackOpen,handleClose }) => {
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -112,8 +113,8 @@ const CreateUserForm = ({ open, handleClose }) => {
     password: '',
     department: '',
     role: '',
-    qualification:'',
-    experience: '',
+    qualification:null,
+    experience: null,
     op_fee: '',
     road_number: '',
     street: '',
@@ -189,6 +190,9 @@ const CreateUserForm = ({ open, handleClose }) => {
     try {
       const response = await axios.post(`${apiConfig.baseURL}/user/api/create/`, formData);
       console.log(response);
+      if (response.status == 201){
+        setSnackOpen(true)
+      }
     } catch (error) {
       console.log(error);
     }
@@ -254,6 +258,22 @@ const CreateUserForm = ({ open, handleClose }) => {
                 ))}
               </TextField>
             </Grid>
+            <Grid item xs={6}>
+                  <TextField
+                    select
+                    label="Qualification"
+                    fullWidth
+                    name="qualification"
+                    value={formData.qualification}
+                    onChange={handleChange}
+                  >
+                    {filterQualification.map((qualification) => (
+                      <MenuItem key={qualification.id} value={qualification.id}>
+                        {qualification.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
             <Grid item xs={6}>
               <TextField
                 label="First Name"
@@ -334,22 +354,7 @@ const CreateUserForm = ({ open, handleClose }) => {
 
             {formData.role === 'doctor' && (
               <>
-                <Grid item xs={6}>
-                  <TextField
-                    select
-                    label="Qualification"
-                    fullWidth
-                    name="qualification"
-                    value={formData.qualification}
-                    onChange={handleChange}
-                  >
-                    {filterQualification.map((qualification) => (
-                      <MenuItem key={qualification.id} value={qualification.id}>
-                        {qualification.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
+                
 
                 <Grid item xs={6}>
                   <TextField
@@ -495,6 +500,7 @@ const CreateUserForm = ({ open, handleClose }) => {
 const UserManagementPage = () => {
   const [userList, setUserList] = useState([])
   const [open, setOpen] = useState(false); // State to control dialog visibility
+  const [snackOpen, setSnackOpen] = useState(false)
 
   useEffect(() => {
     getUserData()
@@ -523,6 +529,13 @@ const UserManagementPage = () => {
   //   { id: 1, username: 'JohnDoe', email: 'john.doe@example.com', role: 'admin' },
   //   ];
 
+  const handleSnackClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSnackOpen(false);
+  };
 
   return (
     <div>
@@ -534,7 +547,13 @@ const UserManagementPage = () => {
           <UserList userList={userList} />
         </Grid>
       </Grid>
-      <CreateUserForm open={open} handleClose={handleClose} /> {/* Render the CreateUserForm component */}
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={5000}
+        onClose={handleSnackClose}
+        message="User created successfully."
+      />
+      <CreateUserForm open={open} setSnackOpen={setSnackOpen} handleClose={handleClose} /> {/* Render the CreateUserForm component */}
     </div>
   );
 };

@@ -103,7 +103,7 @@ import {
 } from '@mui/material';
 
 
-const CreatePatientForm = ({ open, handleClose }) => {
+const CreatePatientForm = ({ open, handleClose ,setSnackOpen,setSnackAppointmentOpen,setPatientList}) => {
     const [filteredDoctors, setFilteredDoctors] = useState([]);
 
     const [formData, setFormData] = useState({
@@ -187,7 +187,15 @@ const CreatePatientForm = ({ open, handleClose }) => {
         try {
             const response = await axios.post(`${apiConfig.baseURL}/patient/api/create/`, patientPayload);
             console.log(response);
-            if (response.status == 201) {
+            if (response.status == 201){
+                setSnackOpen(true)
+                window.location.reload()
+                // const new_res = await axios.get(`${apiConfig.baseURL}/patient/api/create/`);
+                // console.log(new_res.data)
+                // setPatientList(new_res.data)
+            }
+            if (response.status === 201 && formData.showAdditionalFields === true) {
+                console.log('with appoint')
                 let payload = {
                     appointment_date: formData.todayDate,
                     patient: response.data.id,
@@ -216,6 +224,7 @@ const CreatePatientForm = ({ open, handleClose }) => {
                     })
                     setSelectedSlot(null)
                     setAppointmentSlots([])
+                    setSnackAppointmentOpen(true)
                 } catch (error) {
                     console.log(error);
                 }

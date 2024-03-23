@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, TextField, Button, Grid, MenuItem }
 import axios from 'axios';
 import apiConfig from '../../apiConfig';
 
-const AppointmentScheduleDialog = ({ open, handleClose }) => {
+const AppointmentScheduleDialog = ({ open,setSnackAppointmentOpen, handleClose }) => {
     const [formData, setFormData] = useState({
         appointment_date: '',
         patient: '',
@@ -158,6 +158,9 @@ const AppointmentScheduleDialog = ({ open, handleClose }) => {
         try {
             const response = await axios.post(`${apiConfig.baseURL}/patient/api/appointment/`, formData);
             console.log(response);
+            if (response.status == 201){
+                setSnackAppointmentOpen(true)
+            }
             setFormData({
                 appointment_date: '',
                 patient: '',

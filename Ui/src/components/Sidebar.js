@@ -14,6 +14,7 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import { BusinessRounded,CastForEducationRounded } from '@mui/icons-material';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -153,6 +154,36 @@ function  Sidebar() {
                 <IconWithText>
                   <PersonAddAltIcon />
                   <Text>User Control</Text>
+                </IconWithText>
+              </SubmenuItem>
+            </NavLink>
+            {/* departmemt */}
+            <NavLink
+              to="/department"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <SubmenuItem
+                button
+                selected={location.pathname === '/department'}
+              >
+                <IconWithText>
+                  <BusinessRounded />
+                  <Text>Departments</Text>
+                </IconWithText>
+              </SubmenuItem>
+            </NavLink>
+            {/* qualification */}
+            <NavLink
+              to="/qualification"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <SubmenuItem
+                button
+                selected={location.pathname === '/qualification'}
+              >
+                <IconWithText>
+                  <CastForEducationRounded />
+                  <Text>Qualification</Text>
                 </IconWithText>
               </SubmenuItem>
             </NavLink>

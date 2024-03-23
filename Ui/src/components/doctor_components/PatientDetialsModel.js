@@ -14,6 +14,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import SmsIcon from '@mui/icons-material/Sms';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import PetientPresciption from './PrescriptionDialog';
+import { KeyboardBackspaceOutlined } from '@mui/icons-material';
 
 
 const PrescriptionDialog = ({ selectedAppointmentData, prescription, open, onClose, onUpdate }) => {
@@ -153,6 +154,7 @@ const PrescriptionDialog = ({ selectedAppointmentData, prescription, open, onClo
 };
 
 const PatientDetailsComponent = () => {
+    // const history = useHistory(); // Initialize useHistory hook
     const { id } = useParams(); // Get the patient ID from the URL
     const [patientDetails, setPatientDetails] = useState({})
     const [appointments, setAppointments] = useState([])
@@ -292,9 +294,21 @@ const PatientDetailsComponent = () => {
             console.error('error:', error);
         }
     };
+    const handleBack = ()=>{
+        window.history.back();
+
+    }
     return (
         <div>
+             
             <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
+            <IconButton
+                onClick={handleBack}
+                style={{float:"right"}}
+            >
+                {/* Add back button icon here */}
+                <KeyboardBackspaceOutlined /> Back
+            </IconButton>
                 <Typography variant="h6">Patient Details</Typography>
                 <Typography>PatientID: {patientDetails.patient_id}</Typography>
                 <Typography>Name: {patientDetails.name}</Typography>
@@ -310,6 +324,10 @@ const PatientDetailsComponent = () => {
                                 <TableCell>Date</TableCell>
                                 <TableCell>Time</TableCell>
                                 <TableCell>Visit Doctor</TableCell>
+                                <TableCell>BP</TableCell>
+                                <TableCell>Temperature</TableCell>
+                                <TableCell>Weight</TableCell>
+
                                 <TableCell>Department</TableCell>
                                 <TableCell>Prescription</TableCell>
                             </TableRow>
@@ -320,6 +338,9 @@ const PatientDetailsComponent = () => {
                                     <TableCell>{appointment.appointment_date}</TableCell>
                                     <TableCell>{appointment.appointment_time}</TableCell>
                                     <TableCell>{appointment.doctor ? appointment.doctor.username : 'N/A'}</TableCell>
+                                    <TableCell>{appointment.bp ? appointment.bp : 'N/A'}</TableCell>
+                                    <TableCell>{appointment.temp ? appointment.temp : 'N/A'}</TableCell>
+                                    <TableCell>{appointment.weight ? appointment.weight : 'N/A'}</TableCell>
                                     <TableCell>{appointment.doctor && appointment.doctor.department ? appointment.doctor.department.name : 'N/A'}</TableCell>
 
                                     <TableCell>

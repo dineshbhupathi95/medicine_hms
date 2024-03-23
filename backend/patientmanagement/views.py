@@ -18,10 +18,12 @@ from django.core.files.base import ContentFile
 from usermanagement.models import OrganizationDetails
 import spacy
 from django.db.models import Q
+from django.db.models import OuterRef, Subquery
+from rest_framework import serializers
 
 
 class PatientCreateAPIView(generics.ListCreateAPIView):
-    queryset = Patients.objects.all()
+    queryset = Patients.objects.all().order_by('-id')
 
     def get_serializer_class(self):
         if self.request.method == 'POST' or self.request.method == 'PUT':
@@ -206,8 +208,22 @@ class DoctorPatientsAPIView(generics.ListAPIView):
 
         # Sort queryset by appointment_time in ascending order
         queryset = queryset.order_by(F('appointment_time').asc())
+        print(list(queryset))
+        last_visits = []
+        for patient in list(queryset):
+            last_visits_dic = {}
+            obj = Appointment.objects.filter(patient__id=patient.patient.id).order_by('-appointment_date')[:2]
+            if len(list(obj))>=2:
+                last_second_obj = list(obj)[0]
+                print(last_second_obj)
+                last_visits_dic["last_visit_date"] = last_second_obj.appointment_date
+                last_visits_dic["last_visit_time"] = last_second_obj.appointment_time
+                last_visits_dic["last_visit_doctor"] = last_second_obj.doctor.username
+            last_visits.append(last_visits_dic)
+        print(last_visits)
 
         return queryset
+
 
 
 # class PatientDetailsAPIView(generics.ListAPIView):

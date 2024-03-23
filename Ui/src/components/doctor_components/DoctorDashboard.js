@@ -41,6 +41,7 @@ console.log(paginatedPatients,'pagepatients')
         style={{ marginBottom: 20 }}
       />
       <TableContainer component={Paper}>
+        {/* id,name,phonenumber,age,gender,last visit date, last visit, docter */}
         <Table>
           <TableHead>
             <TableRow>
@@ -50,6 +51,9 @@ console.log(paginatedPatients,'pagepatients')
               <TableCell>Age</TableCell>
               <TableCell>Gender</TableCell>
               <TableCell>Appointment Time</TableCell>
+              <TableCell>Last Visit Date</TableCell>
+              <TableCell>Last Visit Doctor</TableCell>
+
               {/* <TableCell>Actions</TableCell>  */}
             </TableRow>
           </TableHead>
@@ -65,6 +69,8 @@ console.log(paginatedPatients,'pagepatients')
                 <TableCell>{patient.patient.age ? patient.patient.age : 'N/A'}</TableCell>
                 <TableCell>{patient.patient.gender ? patient.patient.gender : 'N/A'}</TableCell>
                 <TableCell>{patient.appointment_time ? patient.appointment_time : 'N/A'}</TableCell>
+                <TableCell>{patient.last_patient_visit_date ? patient.last_patient_visit_date : 'N/A'}</TableCell>
+                <TableCell>{patient.last_visit_doctor_name ? patient.last_visit_doctor_name : 'N/A'}</TableCell>
 
                 {/* <TableCell>
                   <Link to={`/patient-history/${patient.patient.id}`}>View Details</Link>

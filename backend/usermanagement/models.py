@@ -100,7 +100,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=USER_ROLE_CHOICES, default='regular')
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
     org = models.ForeignKey(OrganizationDetails, on_delete=models.CASCADE, null=True)
-    qualification = models.ForeignKey(Qualification, on_delete=models.CASCADE, null=True)
+    qualification = models.ForeignKey(Qualification, on_delete=models.CASCADE, null=True, blank=True)
     experience = models.PositiveIntegerField(null=True, blank=True)
     op_fee = models.CharField(max_length=100, null=True, blank=True)
     road_number = models.CharField(max_length=100, blank=True)

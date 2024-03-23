@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['*']
     #sudo ln -s /etc/nginx/sites-available/medimind /etc/nginx/sites-enabled/
 
 # Application definition
+# nohup python manage.py runserver 0.0.0.0:8001 &
 
 INSTALLED_APPS = [
     'django.contrib.admin',
