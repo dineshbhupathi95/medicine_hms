@@ -1,0 +1,18 @@
+version: '3.9'
+
+
+services:
+  backend:
+    build: ./backend
+    container_name: hms_backend
+    ports:
+      - "8000:8000"
+
+    command: python manage.py runserver
+
+  frontend:
+    build: ./Ui
+    container_name: ui_hms
+    ports:
+      - "3000:3000"
+    command: npm start

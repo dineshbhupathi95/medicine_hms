@@ -52,7 +52,7 @@ function TopBar() {
         {/* Display logo image */}
         <img src={logo} alt="Logo" style={{ height: 40, marginRight: 10 }} />
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          MediMind
+          ClinicManagement
         </Typography>
         <IconButton
           size="large"

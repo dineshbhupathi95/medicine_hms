@@ -1,11 +1,12 @@
 from django.db import models
 from usermanagement.models import User
 from django.utils import timezone
-
+from usermanagement.models import OrganizationDetails
 
 # Create your models here.
 
 class Patients(models.Model):
+    org = models.ForeignKey(OrganizationDetails, on_delete=models.CASCADE, null=True, blank=True)
     patient_id = models.CharField(max_length=20, unique=True)  # Field for custom patient ID
     patient_name = models.CharField(max_length=250)
     mobile_number = models.CharField(max_length=31)
@@ -27,6 +28,7 @@ class Patients(models.Model):
 
 
 class Appointment(models.Model):
+    org = models.ForeignKey(OrganizationDetails, on_delete=models.CASCADE, null=True, blank=True)
     patient = models.ForeignKey(Patients, on_delete=models.CASCADE)
     doctor = models.ForeignKey(User, on_delete=models.CASCADE)
     appointment_date = models.DateField()

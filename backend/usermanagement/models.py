@@ -42,19 +42,6 @@ class UserManager(BaseUserManager):
         return self.get(**{case_insensitive_username_field: username})
 
 
-class Department(models.Model):
-    name = models.CharField(max_length=250)
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-
-class Qualification(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return "{}".format(self.name)
-
 
 class OrganizationDetails(models.Model):
     ORG_TYPES = (
@@ -76,6 +63,22 @@ class OrganizationDetails(models.Model):
 
     def __str__(self):
         return self.organization_name
+
+
+class Department(models.Model):
+    org = models.ForeignKey(OrganizationDetails, on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name
+
+
+class Qualification(models.Model):
+    org = models.ForeignKey(OrganizationDetails, on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 class User(AbstractUser):
     USER_ROLE_CHOICES = (
@@ -122,6 +125,7 @@ class User(AbstractUser):
 
 
 class AppointmentSlot(models.Model):
+    org = models.ForeignKey(OrganizationDetails, on_delete=models.CASCADE, null=True, blank=True)
     doctor = models.ForeignKey(User, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
@@ -146,15 +150,57 @@ class AppointmentSlot(models.Model):
             start_time += timezone.timedelta(minutes=15)
 
 
-@receiver(post_save, sender=User)
-def create_slots(sender, instance, created, **kwargs):
-    if created and instance.role == 'doctor':
-        start_time = timezone.now().replace(hour=instance.start_time.hour, minute=instance.start_time.minute, second=0,
-                                            microsecond=0)
-        end_time = timezone.now().replace(hour=instance.end_time.hour, minute=instance.end_time.minute, second=0,
-                                          microsecond=0)
+# @receiver(post_save, sender=User)
+# def create_slots(sender, instance, created, **kwargs):
+#     if created and instance.role == 'doctor':
+#         start_time = timezone.now().replace(hour=instance.start_time.hour, minute=instance.start_time.minute, second=0,
+#                                             microsecond=0)
+#         end_time = timezone.now().replace(hour=instance.end_time.hour, minute=instance.end_time.minute, second=0,
+#                                           microsecond=0)
+#
+#         while start_time < end_time:
+#             AppointmentSlot.objects.create(doctor=instance, start_time=start_time,
+#                                            end_time=start_time + timezone.timedelta(minutes=15))
+#             start_time += timezone.timedelta(minutes=15)
 
-        while start_time < end_time:
-            AppointmentSlot.objects.create(doctor=instance, start_time=start_time,
-                                           end_time=start_time + timezone.timedelta(minutes=15))
-            start_time += timezone.timedelta(minutes=15)
+@receiver(post_save, sender=User)
+def create_doctor_slots(sender, instance, created, **kwargs):
+    if created and instance.role == 'doctor' and instance.start_time and instance.end_time:
+
+        today = timezone.now().date()
+
+        start_dt = timezone.make_aware(
+            timezone.datetime.combine(today, instance.start_time)
+        )
+        end_dt = timezone.make_aware(
+            timezone.datetime.combine(today, instance.end_time)
+        )
+
+        current = start_dt
+
+        while current < end_dt:
+            AppointmentSlot.objects.create(
+                org=instance.org,
+                doctor=instance,
+                start_time=current,
+                end_time=current + timezone.timedelta(minutes=15)
+            )
+            current += timezone.timedelta(minutes=15)
+
+
+class Subscription(models.Model):
+    PLAN_CHOICES = (
+        ('free', 'Free'),
+        ('basic', 'Basic'),
+        ('pro', 'Pro'),
+    )
+
+    org = models.OneToOneField(OrganizationDetails, on_delete=models.CASCADE, null=True, blank=True)
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='free')
+    is_active = models.BooleanField(default=True)
+
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.org.organization_name} - {self.plan}"

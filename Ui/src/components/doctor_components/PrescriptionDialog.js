@@ -129,7 +129,6 @@
 
 // export default PetientPresciption;
 
-
 import React, { useEffect, useState, useRef } from "react";
 import { Button, IconButton, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
@@ -139,6 +138,20 @@ import axios from "axios";
 import apiConfig from "../../apiConfig";
 
 const sampleRate = 16000;
+
+// Define the WordRecognized interface
+interface WordRecognized {
+  isFinal: boolean;
+  text: string;
+}
+
+// Function to process recognized speech
+const speechRecognized = (data: WordRecognized, setCurrentRecognition: Function, setRecognitionHistory: Function) => {
+  if (data.isFinal) {
+    setCurrentRecognition("...");
+    setRecognitionHistory((old) => [data.text, ...old]);
+  } else setCurrentRecognition(data.text + "...");
+};
 
 const getMediaStream = () =>
   navigator.mediaDevices.getUserMedia({
@@ -162,36 +175,28 @@ const PetientPresciption = (props) => {
   const [transcription, setTranscription] = useState("");
   const [openDialog, setOpenDialog] = useState(props.open);
   const recognition = useRef(null);
-  const speechRecognized = (data) => {
-    if (data.isFinal) {
-      setCurrentRecognition("...");
-      setRecognitionHistory((old) => [data.text, ...old]);
-    } else setCurrentRecognition(data.text + "...");
-  };
+
   useEffect(() => {
     const socket = io.connect("http://localhost:8081");
+    setConnection(socket);
+
     socket.on("connect", () => {
       console.log("connected", socket.id);
-      setConnection(socket);
     });
 
-    socket.emit("send_message", "hello world");
-
-    socket.emit("startGoogleCloudStream");
-
-    socket.on("receive_message", (data) => {
-        console.log(data)
-      console.log("received message", data);
-    });
-
-    socket.on("receive_audio_text", (data) => {
-        speechRecognized(data);
-      console.log("received audio text", data);
+    socket.on("receive_audio_text", (data: WordRecognized) => {
+      // Call speechRecognized function to process recognized speech
+      speechRecognized(data, setCurrentRecognition, setRecognitionHistory);
+      console.log("received audio text", data.text);
     });
 
     socket.on("disconnect", () => {
       console.log("disconnected", socket.id);
     });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -207,7 +212,7 @@ const PetientPresciption = (props) => {
     console.log('testt')
     await audioContextRef.current.audioWorklet.addModule("/src/worklets/recorderWorkletProcessor.js");
     console.log('testt1')
-    
+
     audioContextRef.current.resume();
 
     audioInputRef.current = audioContextRef.current.createMediaStreamSource(stream);
@@ -263,12 +268,12 @@ const PetientPresciption = (props) => {
             {isRecording ? <MicIcon /> : <MicOffIcon />}
           </IconButton>
           {/* <TextField multiline fullWidth value={currentRecognition} onChange={(e) => setCurrentRecognition(e.target.value)} rows={10} /> */}
-          <TextField 
-  multiline 
-  fullWidth 
-  value={currentRecognition?.trim() || ""} 
-  onChange={(e) => setTranscription(e.target.value)} 
-  rows={10} 
+          <TextField
+  multiline
+  fullWidth
+  value={currentRecognition?.trim() || ""}
+  onChange={(e) => setTranscription(e.target.value)}
+  rows={10}
 />
 
 
